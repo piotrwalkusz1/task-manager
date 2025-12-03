@@ -16,7 +16,8 @@
 2. **Maven Wrapper**: Always create Maven wrapper for projects
 3. **Testing**: Always test that application builds and runs before completing tasks
 4. **Git Commits**: Never commit changes unless explicitly requested by user
-5. **Memory File**: Keep this file updated with project context and user preferences
+5. **Commit Messages**: Never include Claude Code attribution footer in commit messages (no "🤖 Generated with Claude Code" or "Co-Authored-By: Claude")
+6. **Memory File**: ALWAYS keep this file updated with project context and user preferences CONTINUOUSLY throughout the conversation - update immediately when learning new information
 
 ### Current Project Setup
 - **Package**: com.piotrwalkusz.taskmanager
@@ -36,4 +37,5 @@
 - Basic Maven project structure created
 - Maven wrapper configured
 - Dependencies configured in pom.xml
+- Initial commit created (05f94c2)
 - Ready for application development
