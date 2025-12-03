@@ -8,7 +8,8 @@ A desktop task management application inspired by operating system thread schedu
 
 - **Language**: Java 21
 - **UI Framework**: JavaFX
-- **Persistence**: Hibernate with SQLite
+- **Persistence**: MyBatis with SQLite
+- **Migration Tool**: Flyway
 - **Build Tool**: Maven
 - **Additional Libraries**: Lombok
 
@@ -111,7 +112,8 @@ END;
   - `QUEUED` = has no WorkSession records
 
 #### Data Types
-- SQLite stores timestamps as TEXT in ISO-8601 format
+- SQLite stores timestamps as TEXT in ISO-8601 format (UTC)
+- Java uses `Instant` for timezone-independent timestamps
 - `queue_order` as INTEGER for efficient ordering
 - Cascade delete ensures no orphaned work sessions
 
@@ -125,9 +127,9 @@ END;
 ### Work Session Management
 1. Only one active work session allowed (enforced by trigger)
 2. Starting work:
-   - Insert new WorkSession: `INSERT INTO work_session (task_id, start_time) VALUES (?, datetime('now'))`
+   - Insert new WorkSession with current timestamp (UTC)
 3. Pausing work:
-   - Update current session: `UPDATE work_session SET end_time = datetime('now') WHERE task_id = ? AND end_time IS NULL`
+   - Update current session with current timestamp (UTC)
 4. Rotating task:
    - If active session exists, pause it first
    - Update queue_order to end of queue
@@ -235,32 +237,19 @@ WHERE task_id = ?;
 ### UC1: Add New Task
 1. User enters task name in text field
 2. User clicks "Add Task" button
-3. System executes:
-   ```sql
-   INSERT INTO task (name, queue_order, created_at)
-   VALUES (?, COALESCE((SELECT MAX(queue_order) FROM task), 0) + 1, datetime('now'));
-   ```
+3. System inserts task with current UTC timestamp
 4. System updates queue counter
 5. System clears text field
 
 ### UC2: Start Work on Task
 1. User clicks "Start" button
-2. System executes:
-   ```sql
-   INSERT INTO work_session (task_id, start_time)
-   VALUES (?, datetime('now'));
-   ```
+2. System creates work session with current UTC timestamp
 3. Button text changes to "Pause"
 4. Time display begins updating
 
 ### UC3: Pause Work on Task
 1. User clicks "Pause" button
-2. System executes:
-   ```sql
-   UPDATE work_session
-   SET end_time = datetime('now')
-   WHERE task_id = ? AND end_time IS NULL;
-   ```
+2. System updates active work session with current UTC timestamp
 3. Button text changes to "Start"
 4. Time display shows final time
 
