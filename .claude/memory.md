@@ -46,4 +46,23 @@
 - Requirements documentation created (REQUIREMENTS.md)
 - Technology stack switched from Hibernate to MyBatis + Flyway
 - Custom slash command: `/test` - builds and runs application, auto-fixes errors
-- Ready for application development
+
+### Implementation Progress
+**Completed (Commit: d2fc3b3):**
+- ✅ Database schema (Flyway migration V1__Create_initial_schema.sql)
+  - task table with id, name, queue_order, created_at
+  - work_session table with id, task_id, start_time, end_time
+  - Unique index on queue_order
+  - Unique index on active sessions (WHERE end_time IS NULL)
+  - Trigger to enforce single active work session globally
+- ✅ Model classes: Task and WorkSession
+  - Using Instant for timezone-independent timestamps (UTC)
+  - Lombok annotations for boilerplate code
+
+**Next Steps:**
+- MyBatis mapper interfaces and XML
+- Service layer (TaskService, WorkSessionService)
+- Database configuration and MyBatis setup
+- UI implementation (FXML)
+- Controller implementation
+- Unit tests
