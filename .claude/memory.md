@@ -22,6 +22,7 @@
 4. **Git Commits**: Never commit changes unless explicitly requested by user
 5. **Commit Messages**: Never include Claude Code attribution footer in commit messages (no "🤖 Generated with Claude Code" or "Co-Authored-By: Claude")
 6. **Memory File**: ALWAYS keep this file updated with project context and user preferences CONTINUOUSLY throughout the conversation - update immediately when learning new information
+7. **Implementation Workflow**: After completing a step and confirming app works (/test), IMMEDIATELY update memory.md with implementation progress BEFORE asking about next step - this ensures single commit instead of two separate commits
 
 ### Current Project Setup
 - **Package**: com.piotrwalkusz.taskmanager
