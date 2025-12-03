@@ -8,11 +8,15 @@
 - **Programming Language**: Java 21
 - **UI Framework**: JavaFX with FXML
 - **Database**: SQLite
-- **ORM**: Hibernate
+- **Persistence**: MyBatis (for non-trivial SQL queries)
+- **Migration Tool**: Flyway
 - **Utilities**: Lombok
 
 ### Development Guidelines
-1. **Dependency Versions**: Always use latest stable versions from Maven Central (no beta, alpha, RC, GA versions)
+1. **Dependency Versions**: ALWAYS check Maven Central for latest stable versions before adding any library (no beta, alpha, RC, GA versions). Never assume or use outdated versions.
+   - Check versions by calling: `https://repo1.maven.org/maven2/{groupId}/{artifactId}/maven-metadata.xml`
+   - Example: `https://repo1.maven.org/maven2/org/mybatis/mybatis/maven-metadata.xml`
+   - Use WebFetch tool to fetch the metadata and extract the latest version
 2. **Maven Wrapper**: Always create Maven wrapper for projects
 3. **Testing**: Always test that application builds and runs before completing tasks
 4. **Git Commits**: Never commit changes unless explicitly requested by user
@@ -26,7 +30,8 @@
 
 ### Library Versions (as of 2025-12-03)
 - JavaFX: 25.0.1
-- Hibernate ORM: 7.1.11.Final
+- MyBatis: 3.5.19
+- Flyway: 11.18.0
 - SQLite JDBC: 3.51.1.0
 - Lombok: 1.18.42
 - JUnit: 5.11.3
@@ -38,4 +43,7 @@
 - Maven wrapper configured
 - Dependencies configured in pom.xml
 - Initial commit created (05f94c2)
+- Requirements documentation created (REQUIREMENTS.md)
+- Technology stack switched from Hibernate to MyBatis + Flyway
+- Custom slash command: `/test` - builds and runs application, auto-fixes errors
 - Ready for application development
