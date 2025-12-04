@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piotrwalkusz.taskmanager.mapper.TaskMapper">
+
+    <resultMap id="taskResultMap" type="com.piotrwalkusz.taskmanager.model.Task">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="queueOrder" column="queue_order"/>
+        <result property="createdAt" column="created_at"/>
+    </resultMap>
+
+    <select id="getCurrentTask" resultMap="taskResultMap">
+        SELECT id, name, queue_order, created_at
+        FROM task
+        ORDER BY queue_order
+        LIMIT 1
+    </select>
+
+    <insert id="insertTask" parameterType="com.piotrwalkusz.taskmanager.model.Task" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO task (name, queue_order, created_at)
+        VALUES (
+            #{name},
+            COALESCE((SELECT MAX(queue_order) FROM task), 0) + 1,
+            #{createdAt}
+        )
+    </insert>
+
+    <update id="rotateTask">
+        UPDATE task
+        SET queue_order = (SELECT MAX(queue_order) FROM task) + 1
+        WHERE id = #{taskId}
+    </update>
+
+    <select id="getQueueSize" resultType="int">
+        SELECT COUNT(*) FROM task
+    </select>
+
+    <select id="getAllTasks" resultMap="taskResultMap">
+        SELECT id, name, queue_order, created_at
+        FROM task
+        ORDER BY queue_order
+    </select>
+
+    <select id="getMaxQueueOrder" resultType="java.lang.Integer">
+        SELECT MAX(queue_order) FROM task
+    </select>
+
+</mapper>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piotrwalkusz.taskmanager.mapper.WorkSessionMapper">
+
+    <resultMap id="workSessionResultMap" type="com.piotrwalkusz.taskmanager.model.WorkSession">
+        <id property="id" column="id"/>
+        <result property="taskId" column="task_id"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+    </resultMap>
+
+    <insert id="insertWorkSession" parameterType="com.piotrwalkusz.taskmanager.model.WorkSession" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO work_session (task_id, start_time, end_time)
+        VALUES (#{taskId}, #{startTime}, #{endTime})
+    </insert>
+
+    <update id="pauseWorkSession">
+        UPDATE work_session
+        SET end_time = datetime('now')
+        WHERE task_id = #{taskId}
+        AND end_time IS NULL
+    </update>
+
+    <select id="getActiveWorkSession" resultMap="workSessionResultMap">
+        SELECT id, task_id, start_time, end_time
+        FROM work_session
+        WHERE task_id = #{taskId}
+        AND end_time IS NULL
+    </select>
+
+    <select id="hasActiveWorkSession" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1 FROM work_session
+            WHERE task_id = #{taskId}
+            AND end_time IS NULL
+        )
+    </select>
+
+    <select id="getDailyTimeSeconds" resultType="java.lang.Long">
+        SELECT COALESCE(SUM(
+            CASE
+                WHEN end_time IS NULL
+                THEN (julianday('now') - julianday(start_time)) * 86400
+                ELSE (julianday(end_time) - julianday(start_time)) * 86400
+            END
+        ), 0) AS daily_seconds
+        FROM work_session
+        WHERE task_id = #{taskId}
+        AND date(start_time) = date('now')
+    </select>
+
+    <select id="getTotalTimeSeconds" resultType="java.lang.Long">
+        SELECT COALESCE(SUM(
+            CASE
+                WHEN end_time IS NULL
+                THEN (julianday('now') - julianday(start_time)) * 86400
+                ELSE (julianday(end_time) - julianday(start_time)) * 86400
+            END
+        ), 0) AS total_seconds
+        FROM work_session
+        WHERE task_id = #{taskId}
+    </select>
+
+</mapper>

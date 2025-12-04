@@ -1,13 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.Region?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.piotrwalkusz.taskmanager.controller.MainController">
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-    </padding>
+<VBox spacing="20.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.piotrwalkusz.taskmanager.controller.MainController" style="-fx-padding: 20;">
 
-    <Label fx:id="welcomeLabel" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+    <!-- Header -->
+    <Label text="Task Manager" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+
+    <Region prefHeight="20"/>
+
+    <!-- Current Task Section -->
+    <VBox spacing="10.0" style="-fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 15;">
+        <Label text="Current Task:" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+
+        <Label fx:id="currentTaskLabel" text="No tasks in queue" style="-fx-font-size: 18px;" wrapText="true"/>
+
+        <Label fx:id="timeLabel" text="" style="-fx-font-size: 12px; -fx-text-fill: #666666;"/>
+    </VBox>
+
+    <!-- Action Buttons -->
+    <HBox spacing="10.0">
+        <Button fx:id="startPauseButton" text="Start" onAction="#handleStartPause" prefWidth="120" prefHeight="35"/>
+        <Button fx:id="nextTaskButton" text="Next Task" onAction="#handleNextTask" prefWidth="120" prefHeight="35"/>
+    </HBox>
+
+    <!-- Queue Counter -->
+    <Label fx:id="queueSizeLabel" text="Tasks in queue: 0" style="-fx-font-size: 12px;"/>
+
+    <Region prefHeight="20"/>
+
+    <!-- New Task Section -->
+    <VBox spacing="10.0">
+        <Label text="New Task:" style="-fx-font-size: 14px; -fx-font-weight: bold;"/>
+        <TextField fx:id="newTaskTextField" promptText="Enter task name..." prefHeight="35"/>
+        <Button fx:id="addTaskButton" text="Add Task" onAction="#handleAddTask" prefWidth="120" prefHeight="35"/>
+    </VBox>
+
 </VBox>
