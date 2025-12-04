@@ -14,11 +14,17 @@ import java.util.List;
  */
 public class TaskService {
 
+    private final DatabaseConfig databaseConfig;
+
+    public TaskService(DatabaseConfig databaseConfig) {
+        this.databaseConfig = databaseConfig;
+    }
+
     /**
      * Get current task (head of queue)
      */
     public Task getCurrentTask() {
-        try (SqlSession session = DatabaseConfig.getSqlSessionFactory().openSession()) {
+        try (SqlSession session = databaseConfig.getSqlSessionFactory().openSession()) {
             TaskMapper mapper = session.getMapper(TaskMapper.class);
             return mapper.getCurrentTask();
         }
@@ -28,7 +34,7 @@ public class TaskService {
      * Add new task to end of queue
      */
     public void addTask(String name) {
-        try (SqlSession session = DatabaseConfig.getSqlSessionFactory().openSession()) {
+        try (SqlSession session = databaseConfig.getSqlSessionFactory().openSession()) {
             TaskMapper mapper = session.getMapper(TaskMapper.class);
             Task task = Task.builder()
                     .name(name)
@@ -44,7 +50,7 @@ public class TaskService {
      * If task has active work session, pause it first in the same transaction
      */
     public void rotateTaskWithPause(Long taskId) {
-        try (SqlSession session = DatabaseConfig.getSqlSessionFactory().openSession()) {
+        try (SqlSession session = databaseConfig.getSqlSessionFactory().openSession()) {
             WorkSessionMapper workSessionMapper = session.getMapper(WorkSessionMapper.class);
             TaskMapper taskMapper = session.getMapper(TaskMapper.class);
 
@@ -65,7 +71,7 @@ public class TaskService {
      * Get total number of tasks in queue
      */
     public int getQueueSize() {
-        try (SqlSession session = DatabaseConfig.getSqlSessionFactory().openSession()) {
+        try (SqlSession session = databaseConfig.getSqlSessionFactory().openSession()) {
             TaskMapper mapper = session.getMapper(TaskMapper.class);
             return mapper.getQueueSize();
         }
@@ -75,7 +81,7 @@ public class TaskService {
      * Get all tasks ordered by queue_order
      */
     public List<Task> getAllTasks() {
-        try (SqlSession session = DatabaseConfig.getSqlSessionFactory().openSession()) {
+        try (SqlSession session = databaseConfig.getSqlSessionFactory().openSession()) {
             TaskMapper mapper = session.getMapper(TaskMapper.class);
             return mapper.getAllTasks();
         }

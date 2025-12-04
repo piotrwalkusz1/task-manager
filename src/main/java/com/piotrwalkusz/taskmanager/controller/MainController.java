@@ -36,16 +36,15 @@ public class MainController {
     @FXML
     private Button addTaskButton;
 
-    private final TaskService taskService = new TaskService();
-    private final WorkSessionService workSessionService = new WorkSessionService();
+    private final DatabaseConfig databaseConfig = new DatabaseConfig();
+    private final TaskService taskService = new TaskService(databaseConfig);
+    private final WorkSessionService workSessionService = new WorkSessionService(databaseConfig);
 
     private Task currentTask;
     private Timeline timeUpdateTimeline;
 
     @FXML
     public void initialize() {
-        // Initialize database
-        DatabaseConfig.initialize();
 
         // Setup time update timeline (runs every second)
         timeUpdateTimeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> updateTimeDisplay()));

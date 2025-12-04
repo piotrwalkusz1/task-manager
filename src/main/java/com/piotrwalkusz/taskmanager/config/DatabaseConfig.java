@@ -7,29 +7,39 @@ import org.flywaydb.core.Flyway;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Properties;
 
 /**
  * Database configuration and initialization
  */
 public class DatabaseConfig {
 
-    private static final String DB_URL = "jdbc:sqlite:taskmanager.db";
-    private static SqlSessionFactory sqlSessionFactory;
+    private static final String DEFAULT_DB_URL = "jdbc:sqlite:taskmanager.db";
+    private final SqlSessionFactory sqlSessionFactory;
 
     /**
-     * Initialize database with Flyway migrations and MyBatis
+     * Create DatabaseConfig with default database URL
      */
-    public static void initialize() {
+    public DatabaseConfig() {
+        this(DEFAULT_DB_URL);
+    }
+
+    /**
+     * Create DatabaseConfig with custom database URL
+     */
+    public DatabaseConfig(String dbUrl) {
         // Run Flyway migrations
         Flyway flyway = Flyway.configure()
-                .dataSource(DB_URL, null, null)
+                .dataSource(dbUrl, null, null)
                 .locations("classpath:db/migration")
                 .load();
         flyway.migrate();
 
-        // Initialize MyBatis
+        // Initialize MyBatis with URL override
         try (InputStream inputStream = Resources.getResourceAsStream("mybatis-config.xml")) {
-            sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream);
+            Properties properties = new Properties();
+            properties.setProperty("url", dbUrl);
+            this.sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream, properties);
         } catch (IOException e) {
             throw new RuntimeException("Failed to initialize MyBatis", e);
         }
@@ -38,10 +48,7 @@ public class DatabaseConfig {
     /**
      * Get MyBatis SqlSessionFactory
      */
-    public static SqlSessionFactory getSqlSessionFactory() {
-        if (sqlSessionFactory == null) {
-            initialize();
-        }
+    public SqlSessionFactory getSqlSessionFactory() {
         return sqlSessionFactory;
     }
 }

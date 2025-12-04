@@ -19,10 +19,11 @@
    - Use WebFetch tool to fetch the metadata and extract the latest version
 2. **Maven Wrapper**: Always create Maven wrapper for projects
 3. **Testing**: Always test that application builds and runs before completing tasks
-4. **Git Commits**: Never commit changes unless explicitly requested by user
-5. **Commit Messages**: Never include Claude Code attribution footer in commit messages (no "🤖 Generated with Claude Code" or "Co-Authored-By: Claude")
-6. **Memory File**: ALWAYS keep this file updated with project context and user preferences CONTINUOUSLY throughout the conversation - update immediately when learning new information
-7. **Implementation Workflow**: After completing a step and confirming app works (/test), IMMEDIATELY update memory.md with implementation progress BEFORE asking about next step - this ensures single commit instead of two separate commits
+4. **Unit Tests**: NEVER use Thread.sleep() in tests - they are unstable and unnecessarily slow down test execution
+5. **Git Commits**: Never commit changes unless explicitly requested by user
+6. **Commit Messages**: Never include Claude Code attribution footer in commit messages (no "🤖 Generated with Claude Code" or "Co-Authored-By: Claude")
+7. **Memory File**: ALWAYS keep this file updated with project context and user preferences CONTINUOUSLY throughout the conversation - update immediately when learning new information
+8. **Implementation Workflow**: After completing a step and confirming app works (/test), IMMEDIATELY update memory.md with implementation progress BEFORE asking about next step - this ensures single commit instead of two separate commits
 
 ### Current Project Setup
 - **Package**: com.piotrwalkusz.taskmanager
@@ -76,6 +77,8 @@
 
 5. **Configuration:**
    - ✅ DatabaseConfig with Flyway initialization and MyBatis setup
+   - ✅ DatabaseConfig uses dependency injection pattern (accepts dbUrl in constructor)
+   - ✅ MyBatis config uses Properties to override database URL (simple solution)
    - ✅ Maven compiler plugin configured with Lombok annotation processor
 
 6. **UI Layer:**
@@ -83,6 +86,14 @@
    - ✅ MainController with complete business logic
    - ✅ Timeline for real-time time updates (every second)
    - ✅ Event handlers for Add Task, Start/Pause, Next Task
+
+7. **Testing:**
+   - ✅ BaseServiceTest with common setup/cleanup
+   - ✅ Each test gets isolated database in temp directory (JUnit @TempDir)
+   - ✅ TaskServiceTest - 6 tests covering queue operations and rotation
+   - ✅ WorkSessionServiceTest - 6 tests covering session management
+   - ✅ All tests passing (13 tests, 0 failures, ~3.2s execution time)
+   - ✅ No Thread.sleep() - tests are fast and stable
 
 **Application Features Working:**
 - ✅ Database automatically created on first run
@@ -93,8 +104,9 @@
 - ✅ Real-time time tracking display (updates every second)
 - ✅ Queue size counter
 - ✅ All business operations are thread-safe and atomic
+- ✅ Comprehensive unit test coverage
 
 **Next Steps:**
-- Unit tests for service layer
 - Manual testing of complete application flow
 - Edge case handling and validation
+- Performance testing

@@ -12,11 +12,17 @@ import java.time.Instant;
  */
 public class WorkSessionService {
 
+    private final DatabaseConfig databaseConfig;
+
+    public WorkSessionService(DatabaseConfig databaseConfig) {
+        this.databaseConfig = databaseConfig;
+    }
+
     /**
      * Start new work session for task
      */
     public void startWorkSession(Long taskId) {
-        try (SqlSession session = DatabaseConfig.getSqlSessionFactory().openSession()) {
+        try (SqlSession session = databaseConfig.getSqlSessionFactory().openSession()) {
             WorkSessionMapper mapper = session.getMapper(WorkSessionMapper.class);
             WorkSession workSession = WorkSession.builder()
                     .taskId(taskId)
@@ -31,7 +37,7 @@ public class WorkSessionService {
      * Pause active work session for task
      */
     public void pauseWorkSession(Long taskId) {
-        try (SqlSession session = DatabaseConfig.getSqlSessionFactory().openSession()) {
+        try (SqlSession session = databaseConfig.getSqlSessionFactory().openSession()) {
             WorkSessionMapper mapper = session.getMapper(WorkSessionMapper.class);
             mapper.pauseWorkSession(taskId);
             session.commit();
@@ -42,7 +48,7 @@ public class WorkSessionService {
      * Check if task has active work session
      */
     public boolean hasActiveWorkSession(Long taskId) {
-        try (SqlSession session = DatabaseConfig.getSqlSessionFactory().openSession()) {
+        try (SqlSession session = databaseConfig.getSqlSessionFactory().openSession()) {
             WorkSessionMapper mapper = session.getMapper(WorkSessionMapper.class);
             return mapper.hasActiveWorkSession(taskId);
         }
@@ -52,7 +58,7 @@ public class WorkSessionService {
      * Get active work session for task
      */
     public WorkSession getActiveWorkSession(Long taskId) {
-        try (SqlSession session = DatabaseConfig.getSqlSessionFactory().openSession()) {
+        try (SqlSession session = databaseConfig.getSqlSessionFactory().openSession()) {
             WorkSessionMapper mapper = session.getMapper(WorkSessionMapper.class);
             return mapper.getActiveWorkSession(taskId);
         }
@@ -62,7 +68,7 @@ public class WorkSessionService {
      * Get daily time spent on task (in seconds)
      */
     public long getDailyTimeSeconds(Long taskId) {
-        try (SqlSession session = DatabaseConfig.getSqlSessionFactory().openSession()) {
+        try (SqlSession session = databaseConfig.getSqlSessionFactory().openSession()) {
             WorkSessionMapper mapper = session.getMapper(WorkSessionMapper.class);
             Long time = mapper.getDailyTimeSeconds(taskId);
             return time != null ? time : 0;
@@ -73,7 +79,7 @@ public class WorkSessionService {
      * Get total time spent on task (in seconds)
      */
     public long getTotalTimeSeconds(Long taskId) {
-        try (SqlSession session = DatabaseConfig.getSqlSessionFactory().openSession()) {
+        try (SqlSession session = databaseConfig.getSqlSessionFactory().openSession()) {
             WorkSessionMapper mapper = session.getMapper(WorkSessionMapper.class);
             Long time = mapper.getTotalTimeSeconds(taskId);
             return time != null ? time : 0;
@@ -84,7 +90,7 @@ public class WorkSessionService {
      * Toggle work session - start if not active, pause if active (transactional)
      */
     public void toggleWorkSession(Long taskId) {
-        try (SqlSession session = DatabaseConfig.getSqlSessionFactory().openSession()) {
+        try (SqlSession session = databaseConfig.getSqlSessionFactory().openSession()) {
             WorkSessionMapper mapper = session.getMapper(WorkSessionMapper.class);
 
             // Check and toggle in same transaction
