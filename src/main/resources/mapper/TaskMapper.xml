@@ -7,11 +7,13 @@
         <result property="name" column="name"/>
         <result property="queueOrder" column="queue_order"/>
         <result property="createdAt" column="created_at"/>
+        <result property="isDeleted" column="is_deleted"/>
     </resultMap>
 
     <select id="getCurrentTask" resultMap="taskResultMap">
-        SELECT id, name, queue_order, created_at
+        SELECT id, name, queue_order, created_at, is_deleted
         FROM task
+        WHERE is_deleted = 0
         ORDER BY queue_order
         LIMIT 1
     </select>
@@ -32,17 +34,34 @@
     </update>
 
     <select id="getQueueSize" resultType="int">
-        SELECT COUNT(*) FROM task
+        SELECT COUNT(*) FROM task WHERE is_deleted = 0
     </select>
 
     <select id="getAllTasks" resultMap="taskResultMap">
-        SELECT id, name, queue_order, created_at
+        SELECT id, name, queue_order, created_at, is_deleted
         FROM task
+        WHERE is_deleted = 0
         ORDER BY queue_order
     </select>
 
     <select id="getMaxQueueOrder" resultType="java.lang.Integer">
-        SELECT MAX(queue_order) FROM task
+        SELECT MAX(queue_order) FROM task WHERE is_deleted = 0
     </select>
+
+    <select id="hasDeletedTask" resultType="boolean">
+        SELECT EXISTS(SELECT 1 FROM task WHERE is_deleted = 1)
+    </select>
+
+    <update id="softDeleteTask">
+        UPDATE task SET is_deleted = 1 WHERE id = #{taskId}
+    </update>
+
+    <update id="undoDelete">
+        UPDATE task SET is_deleted = 0 WHERE is_deleted = 1
+    </update>
+
+    <delete id="cleanupDeletedTasks">
+        DELETE FROM task WHERE is_deleted = 1
+    </delete>
 
 </mapper>

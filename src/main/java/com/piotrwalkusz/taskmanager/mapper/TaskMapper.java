@@ -38,4 +38,24 @@ public interface TaskMapper {
      * Get max queue_order value
      */
     Integer getMaxQueueOrder();
+
+    /**
+     * Check if there is any deleted task
+     */
+    boolean hasDeletedTask();
+
+    /**
+     * Soft delete task by ID
+     */
+    void softDeleteTask(@Param("taskId") Long taskId);
+
+    /**
+     * Undo delete - restore all deleted tasks
+     */
+    void undoDelete();
+
+    /**
+     * Permanently delete all soft-deleted tasks
+     */
+    void cleanupDeletedTasks();
 }

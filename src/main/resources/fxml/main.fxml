@@ -28,6 +28,8 @@
     <HBox spacing="10.0">
         <Button fx:id="startPauseButton" text="Start" onAction="#handleStartPause" prefWidth="120" prefHeight="35"/>
         <Button fx:id="nextTaskButton" text="Next Task" onAction="#handleNextTask" prefWidth="120" prefHeight="35"/>
+        <Button fx:id="deleteTaskButton" text="Delete Task" onAction="#handleDeleteTask" prefWidth="120" prefHeight="35"/>
+        <Button fx:id="undoButton" text="Undo" onAction="#handleUndo" prefWidth="120" prefHeight="35" visible="false" managed="false"/>
     </HBox>
 
     <!-- Queue Counter -->

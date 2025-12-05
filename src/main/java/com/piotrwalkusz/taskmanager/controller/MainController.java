@@ -36,6 +36,12 @@ public class MainController {
     @FXML
     private Button addTaskButton;
 
+    @FXML
+    private Button deleteTaskButton;
+
+    @FXML
+    private Button undoButton;
+
     private final DatabaseConfig databaseConfig = new DatabaseConfig();
     private final TaskService taskService = new TaskService(databaseConfig);
     private final WorkSessionService workSessionService = new WorkSessionService(databaseConfig);
@@ -73,6 +79,9 @@ public class MainController {
             return;
         }
 
+        // Cleanup deleted tasks before starting work
+        taskService.cleanupDeletedTasks();
+
         // Toggle work session (transactional)
         workSessionService.toggleWorkSession(currentTask.getId());
 
@@ -85,8 +94,31 @@ public class MainController {
             return;
         }
 
+        // Cleanup deleted tasks before rotating
+        taskService.cleanupDeletedTasks();
+
         // Pause if in progress and rotate task (transactional)
         taskService.rotateTaskWithPause(currentTask.getId());
+
+        refreshUI();
+    }
+
+    @FXML
+    private void handleDeleteTask() {
+        if (currentTask == null) {
+            return;
+        }
+
+        // Soft delete task
+        taskService.softDeleteTask(currentTask.getId());
+
+        refreshUI();
+    }
+
+    @FXML
+    private void handleUndo() {
+        // Restore deleted tasks
+        taskService.undoDelete();
 
         refreshUI();
     }
@@ -104,6 +136,9 @@ public class MainController {
 
         // Update buttons state
         updateButtonsState();
+
+        // Update undo button visibility
+        updateUndoButton();
 
         // Update time display
         updateTimeDisplay();
@@ -123,6 +158,15 @@ public class MainController {
 
         // Next Task button
         nextTaskButton.setDisable(!hasTask);
+
+        // Delete Task button
+        deleteTaskButton.setDisable(!hasTask);
+    }
+
+    private void updateUndoButton() {
+        boolean hasDeleted = taskService.hasDeletedTask();
+        undoButton.setVisible(hasDeleted);
+        undoButton.setManaged(hasDeleted);
     }
 
     private void updateTimeDisplay() {

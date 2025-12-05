@@ -86,4 +86,47 @@ public class TaskService {
             return mapper.getAllTasks();
         }
     }
+
+    /**
+     * Check if there is any deleted task
+     */
+    public boolean hasDeletedTask() {
+        try (SqlSession session = databaseConfig.getSqlSessionFactory().openSession()) {
+            TaskMapper mapper = session.getMapper(TaskMapper.class);
+            return mapper.hasDeletedTask();
+        }
+    }
+
+    /**
+     * Soft delete task by ID
+     */
+    public void softDeleteTask(Long taskId) {
+        try (SqlSession session = databaseConfig.getSqlSessionFactory().openSession()) {
+            TaskMapper mapper = session.getMapper(TaskMapper.class);
+            mapper.softDeleteTask(taskId);
+            session.commit();
+        }
+    }
+
+    /**
+     * Undo delete - restore all deleted tasks
+     */
+    public void undoDelete() {
+        try (SqlSession session = databaseConfig.getSqlSessionFactory().openSession()) {
+            TaskMapper mapper = session.getMapper(TaskMapper.class);
+            mapper.undoDelete();
+            session.commit();
+        }
+    }
+
+    /**
+     * Permanently delete all soft-deleted tasks
+     */
+    public void cleanupDeletedTasks() {
+        try (SqlSession session = databaseConfig.getSqlSessionFactory().openSession()) {
+            TaskMapper mapper = session.getMapper(TaskMapper.class);
+            mapper.cleanupDeletedTasks();
+            session.commit();
+        }
+    }
 }

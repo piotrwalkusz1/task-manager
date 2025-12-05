@@ -16,4 +16,5 @@ public class Task {
     private String name;
     private Integer queueOrder;
     private Instant createdAt;
+    private Boolean isDeleted;
 }

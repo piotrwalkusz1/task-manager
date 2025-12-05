@@ -51,25 +51,31 @@
 
 ### Implementation Progress
 
-**Completed - Core Application (Ready to commit):**
+**Completed - Core Application:**
 
 1. **Database Layer:**
    - ✅ Flyway migration V1__Create_initial_schema.sql
+   - ✅ Flyway migration V2__Add_soft_delete.sql (adds is_deleted flag)
    - ✅ task and work_session tables with proper constraints
    - ✅ Unique indexes and trigger for single active session
+   - ✅ Soft delete support for tasks
 
 2. **Model Layer:**
    - ✅ Task and WorkSession POJOs with Instant timestamps (UTC)
+   - ✅ Task model includes isDeleted field
    - ✅ Lombok annotations (@Data, @Builder, @NoArgsConstructor, @AllArgsConstructor)
 
 3. **Persistence Layer (MyBatis):**
    - ✅ TaskMapper interface and XML (getCurrentTask, insertTask, rotateTask, getQueueSize)
+   - ✅ TaskMapper soft delete methods (hasDeletedTask, softDeleteTask, undoDelete, cleanupDeletedTasks)
+   - ✅ All queries filter out deleted tasks (WHERE is_deleted = 0)
    - ✅ WorkSessionMapper interface and XML (insertWorkSession, pauseWorkSession, hasActiveWorkSession, time calculations)
    - ✅ InstantTypeHandler for UTC timestamp conversion
    - ✅ mybatis-config.xml with SQLite configuration
 
 4. **Service Layer:**
    - ✅ TaskService with transactional rotateTaskWithPause() method
+   - ✅ TaskService soft delete methods (softDeleteTask, undoDelete, hasDeletedTask, cleanupDeletedTasks)
    - ✅ WorkSessionService with transactional toggleWorkSession() method
    - ✅ All business operations are atomic and transactional
    - ✅ Proper transaction boundaries using SqlSession
@@ -83,9 +89,13 @@
 
 6. **UI Layer:**
    - ✅ main.fxml with all required UI components (task display, time labels, buttons, input field)
+   - ✅ Delete Task button and Undo button in main.fxml
    - ✅ MainController with complete business logic
+   - ✅ MainController handlers for delete/undo operations
+   - ✅ Undo button visibility managed dynamically (visible only when there are deleted tasks)
+   - ✅ Automatic cleanup of deleted tasks before Start/Pause or Next Task
    - ✅ Timeline for real-time time updates (every second)
-   - ✅ Event handlers for Add Task, Start/Pause, Next Task
+   - ✅ Event handlers for Add Task, Start/Pause, Next Task, Delete Task, Undo
 
 7. **Testing:**
    - ✅ BaseServiceTest with common setup/cleanup
@@ -101,12 +111,15 @@
 - ✅ Display current task (head of queue)
 - ✅ Start/Pause work sessions (transactional toggle)
 - ✅ Rotate tasks to end of queue (transactional with auto-pause)
+- ✅ **Delete current task (soft delete with undo)**
+- ✅ **Undo delete functionality** - restores deleted tasks
+- ✅ **Automatic cleanup** - deleted tasks permanently removed when starting work or rotating
 - ✅ Real-time time tracking display (updates every second)
 - ✅ Queue size counter
 - ✅ All business operations are thread-safe and atomic
 - ✅ Comprehensive unit test coverage
 
 **Next Steps:**
-- Manual testing of complete application flow
-- Edge case handling and validation
-- Performance testing
+- Implement task name editing
+- Implement priority flag for tasks
+- UI/UX improvements
