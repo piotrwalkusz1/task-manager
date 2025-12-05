@@ -1,0 +1,158 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '25'
+          cache: 'maven'
+
+      - name: Extract version from tag
+        id: version
+        shell: bash
+        run: |
+          TAG=${GITHUB_REF#refs/tags/v}
+          echo "VERSION=$TAG" >> $GITHUB_OUTPUT
+          echo "Building version: $TAG"
+
+      - name: Update pom.xml version
+        shell: bash
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          ./mvnw versions:set -DnewVersion=$VERSION -DgenerateBackupPoms=false
+
+      - name: Build portable app
+        run: ./mvnw clean package jpackage:jpackage
+
+      - name: Create ZIP archive
+        shell: bash
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          cd target/dist
+          7z a -tzip ../../TaskManager-${VERSION}-windows-x64.zip TaskManager
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-build
+          path: TaskManager-${{ steps.version.outputs.VERSION }}-windows-x64.zip
+
+  build-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '25'
+          cache: 'maven'
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          TAG=${GITHUB_REF#refs/tags/v}
+          echo "VERSION=$TAG" >> $GITHUB_OUTPUT
+          echo "Building version: $TAG"
+
+      - name: Update pom.xml version
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          ./mvnw versions:set -DnewVersion=$VERSION -DgenerateBackupPoms=false
+
+      - name: Build portable app
+        run: ./mvnw clean package jpackage:jpackage
+
+      - name: Create tarball
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          cd target/dist
+          tar -czf ../../TaskManager-${VERSION}-linux-x64.tar.gz TaskManager
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-build
+          path: TaskManager-${{ steps.version.outputs.VERSION }}-linux-x64.tar.gz
+
+  create-release:
+    needs: [build-windows, build-linux]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          TAG=${GITHUB_REF#refs/tags/v}
+          echo "VERSION=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Download Windows build
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-build
+
+      - name: Download Linux build
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-build
+
+      - name: Calculate checksums
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          sha256sum TaskManager-${VERSION}-windows-x64.zip > TaskManager-${VERSION}-windows-x64.zip.sha256
+          sha256sum TaskManager-${VERSION}-linux-x64.tar.gz > TaskManager-${VERSION}-linux-x64.tar.gz.sha256
+          cat *.sha256
+
+      - name: Create version metadata
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          cat > version.json << EOF
+          {
+            "version": "${VERSION}",
+            "releaseDate": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "windows": {
+              "downloadUrl": "https://github.com/${{ github.repository }}/releases/download/v${VERSION}/TaskManager-${VERSION}-windows-x64.zip",
+              "sha256": "$(cat TaskManager-${VERSION}-windows-x64.zip.sha256 | cut -d' ' -f1)"
+            },
+            "linux": {
+              "downloadUrl": "https://github.com/${{ github.repository }}/releases/download/v${VERSION}/TaskManager-${VERSION}-linux-x64.tar.gz",
+              "sha256": "$(cat TaskManager-${VERSION}-linux-x64.tar.gz.sha256 | cut -d' ' -f1)"
+            },
+            "minimumVersion": "1.0.0"
+          }
+          EOF
+          cat version.json
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            TaskManager-${{ steps.version.outputs.VERSION }}-windows-x64.zip
+            TaskManager-${{ steps.version.outputs.VERSION }}-windows-x64.zip.sha256
+            TaskManager-${{ steps.version.outputs.VERSION }}-linux-x64.tar.gz
+            TaskManager-${{ steps.version.outputs.VERSION }}-linux-x64.tar.gz.sha256
+            version.json
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

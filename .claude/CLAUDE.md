@@ -143,12 +143,31 @@
 **Release Workflow:**
 - Version in pom.xml: 0.0.0-SNAPSHOT (placeholder, never changed in repo)
 - Actual release version comes from git tag (e.g., v1.0.0)
-- GitHub Actions will: extract version from tag → update pom.xml version → build with Maven → create portable apps for Windows and Linux
-- Distribution: portable ZIP files on GitHub Releases (no installers)
+- GitHub Actions workflow (.github/workflows/release.yml):
+  - Trigger: push tag matching `v*`
+  - Parallel builds: Windows (windows-latest) and Linux (ubuntu-latest)
+  - JDK: 25 (Temurin distribution)
+  - Build command: `./mvnw clean package jpackage:jpackage`
+  - Outputs:
+    - Windows: TaskManager-{version}-windows-x64.zip
+    - Linux: TaskManager-{version}-linux-x64.tar.gz
+  - Checksums: SHA256 for each archive
+  - Metadata: version.json with download URLs and checksums
+  - Release: automatic GitHub Release with all artifacts
+- Distribution: portable archives on GitHub Releases (no installers)
 - Future: DIY auto-updater to check GitHub Releases API
 
+9. **CI/CD (GitHub Actions):**
+   - ✅ Release workflow configured (.github/workflows/release.yml)
+   - ✅ Automatic builds on tag push (v*)
+   - ✅ Parallel Windows and Linux builds
+   - ✅ Portable archives (ZIP for Windows, tar.gz for Linux)
+   - ✅ SHA256 checksums
+   - ✅ version.json metadata for auto-updater
+   - ✅ Automatic GitHub Release creation
+
 **Next Steps:**
-- Create GitHub Actions workflow for automated releases
+- Test release workflow by pushing a tag
 - Implement DIY auto-updater
 - Implement task name editing
 - Implement priority flag for tasks
