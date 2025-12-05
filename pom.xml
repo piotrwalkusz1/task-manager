@@ -5,7 +5,7 @@
 
   <groupId>com.piotrwalkusz.taskmanager</groupId>
   <artifactId>task-manager</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>0.0.0-SNAPSHOT</version>
 
   <name>task-manager</name>
   <!-- FIXME change it to the project's website -->
@@ -148,6 +148,65 @@
         <configuration>
           <mainClass>com.piotrwalkusz.taskmanager.App</mainClass>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.panteleyev</groupId>
+        <artifactId>jpackage-maven-plugin</artifactId>
+        <version>1.7.1</version>
+        <configuration>
+          <name>TaskManager</name>
+          <type>APP_IMAGE</type>
+          <appVersion>${project.version}</appVersion>
+          <vendor>Piotr Walkusz</vendor>
+          <description>Task Manager - Queue-based task tracking application</description>
+          <input>target/libs</input>
+          <mainJar>task-manager-${project.version}.jar</mainJar>
+          <mainClass>com.piotrwalkusz.taskmanager.App</mainClass>
+          <destination>target/dist</destination>
+          <javaOptions>
+            <option>-Dfile.encoding=UTF-8</option>
+            <option>--module-path</option>
+            <option>$APPDIR</option>
+            <option>--add-modules</option>
+            <option>javafx.controls,javafx.fxml</option>
+          </javaOptions>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.8.1</version>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/libs</outputDirectory>
+              <includeScope>runtime</includeScope>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>${project.groupId}</groupId>
+                  <artifactId>${project.artifactId}</artifactId>
+                  <version>${project.version}</version>
+                  <type>jar</type>
+                  <outputDirectory>${project.build.directory}/libs</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

@@ -30,7 +30,7 @@
 - **Group ID**: com.piotrwalkusz.taskmanager
 - **Artifact ID**: task-manager
 
-### Library Versions (as of 2025-12-03)
+### Library Versions (as of 2025-12-05)
 - JavaFX: 25.0.1
 - MyBatis: 3.5.19
 - Flyway: 11.18.0
@@ -39,6 +39,8 @@
 - JUnit: 5.11.3
 - Maven Compiler Plugin: 3.14.1
 - JavaFX Maven Plugin: 0.0.8
+- jpackage-maven-plugin: 1.7.1
+- maven-dependency-plugin: 3.8.1
 
 ## Project Status
 - Basic Maven project structure created
@@ -125,7 +127,29 @@
 - ✅ All business operations are thread-safe and atomic
 - ✅ Comprehensive unit test coverage
 
+8. **Release/Distribution (Portable Apps):**
+   - ✅ jpackage-maven-plugin configured for creating portable applications
+   - ✅ Type: APP_IMAGE (no installer, fully portable)
+   - ✅ Automatic dependency copying (maven-dependency-plugin)
+   - ✅ JavaFX modules loaded via --module-path and --add-modules in javaOptions
+   - ✅ Custom runtime with embedded JRE (via jlink)
+   - ✅ Tested locally on Linux - application runs successfully
+   - ✅ Build command: `./mvnw clean package jpackage:jpackage`
+   - ✅ Output: `target/dist/TaskManager/` (portable folder with bin/TaskManager launcher)
+   - ✅ Works on both Linux and Windows (same APP_IMAGE configuration)
+   - ✅ Version management: pom.xml version is placeholder (1.0.0), actual version from git tag
+   - ✅ JDK requirement: Java 25 (Temurin recommended for jlink/jpackage support)
+
+**Release Workflow:**
+- Version in pom.xml: 0.0.0-SNAPSHOT (placeholder, never changed in repo)
+- Actual release version comes from git tag (e.g., v1.0.0)
+- GitHub Actions will: extract version from tag → update pom.xml version → build with Maven → create portable apps for Windows and Linux
+- Distribution: portable ZIP files on GitHub Releases (no installers)
+- Future: DIY auto-updater to check GitHub Releases API
+
 **Next Steps:**
+- Create GitHub Actions workflow for automated releases
+- Implement DIY auto-updater
 - Implement task name editing
 - Implement priority flag for tasks
 - Further UI/UX refinements based on user feedback
