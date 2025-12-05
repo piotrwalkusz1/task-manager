@@ -1,11 +1,11 @@
 package com.piotrwalkusz.taskmanager.service;
 
 import com.piotrwalkusz.taskmanager.config.DatabaseConfig;
-import org.junit.jupiter.api.AfterEach;
+import org.apache.ibatis.session.SqlSession;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.io.File;
 import java.nio.file.Path;
 import java.util.UUID;
 
@@ -15,30 +15,33 @@ import java.util.UUID;
 abstract class BaseServiceTest {
 
     @TempDir
-    Path tempDir;
+    static Path tempDir;
 
-    protected TaskService taskService;
-    protected WorkSessionService workSessionService;
-    private DatabaseConfig databaseConfig;
-    private File testDbFile;
+    protected static TaskService taskService;
+    protected static WorkSessionService workSessionService;
+    private static DatabaseConfig databaseConfig;
 
-    @BeforeEach
-    void setupDatabase() {
-        // Create unique database for each test
-        testDbFile = tempDir.resolve("test-" + UUID.randomUUID() + ".db").toFile();
-        String dbUrl = "jdbc:sqlite:" + testDbFile.getAbsolutePath();
+    @BeforeAll
+    static void setupDatabase() {
+        // Create single database for all tests in this class
+        String testDbFile = tempDir.resolve("test-" + UUID.randomUUID() + ".db").toString();
+        String dbUrl = "jdbc:sqlite:" + testDbFile;
 
-        // Initialize database and services
+        // Initialize database and services once
         databaseConfig = new DatabaseConfig(dbUrl);
         taskService = new TaskService(databaseConfig);
         workSessionService = new WorkSessionService(databaseConfig);
     }
 
-    @AfterEach
-    void cleanupDatabase() {
-        // Delete test database file after each test
-        if (testDbFile != null && testDbFile.exists()) {
-            testDbFile.delete();
+    @BeforeEach
+    void clearDatabase() {
+        // Clear all data before each test
+        try (SqlSession session = databaseConfig.getSqlSessionFactory().openSession()) {
+            session.getConnection().createStatement().execute("DELETE FROM work_session");
+            session.getConnection().createStatement().execute("DELETE FROM task");
+            session.commit();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to clear database", e);
         }
     }
 }
