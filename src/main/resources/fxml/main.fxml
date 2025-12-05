@@ -8,27 +8,34 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.Priority?>
 
-<VBox spacing="10.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.piotrwalkusz.taskmanager.controller.MainController" style="-fx-padding: 15;" prefWidth="450">
+<VBox spacing="12.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.piotrwalkusz.taskmanager.controller.MainController" style="-fx-background-color: #f5f5f5; -fx-padding: 16;" prefWidth="450">
 
     <!-- Current Task Section -->
-    <VBox spacing="5.0" style="-fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 12;">
-        <Label fx:id="currentTaskLabel" text="No tasks in queue" style="-fx-font-size: 18px; -fx-font-weight: bold;" wrapText="true"/>
-        <Label fx:id="timeLabel" text="" style="-fx-font-size: 13px; -fx-text-fill: #666666;"/>
-        <Label fx:id="queueSizeLabel" text="Tasks: 0" style="-fx-font-size: 13px; -fx-text-fill: #666666;"/>
+    <VBox spacing="8.0" style="-fx-background-color: white; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2); -fx-padding: 16;">
+        <Label fx:id="currentTaskLabel" text="No tasks in queue" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" wrapText="true"/>
+        <Label fx:id="timeLabel" text="" style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
+        <Label fx:id="queueSizeLabel" text="Tasks: 0" style="-fx-font-size: 13px; -fx-text-fill: #7f8c8d;"/>
     </VBox>
 
     <!-- Action Buttons -->
     <HBox spacing="8.0" alignment="CENTER_LEFT">
-        <Button fx:id="startPauseButton" text="▶" onAction="#handleStartPause" prefWidth="50" prefHeight="40" style="-fx-font-size: 18px;"/>
-        <Button fx:id="nextTaskButton" text="⤵" onAction="#handleNextTask" prefWidth="50" prefHeight="40" style="-fx-font-size: 20px;"/>
-        <Button fx:id="deleteTaskButton" text="✓" onAction="#handleDeleteTask" prefWidth="50" prefHeight="40" style="-fx-font-size: 20px;"/>
-        <Button fx:id="undoButton" text="↩" onAction="#handleUndo" prefWidth="50" prefHeight="40" style="-fx-font-size: 20px;" visible="false" managed="false"/>
+        <Button fx:id="startPauseButton" text="▶" onAction="#handleStartPause" prefWidth="50" prefHeight="40"
+                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 18px; -fx-background-radius: 6; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 4, 0, 0, 1);"/>
+        <Button fx:id="nextTaskButton" text="⤵" onAction="#handleNextTask" prefWidth="50" prefHeight="40"
+                style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-font-size: 20px; -fx-background-radius: 6; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 4, 0, 0, 1);"/>
+        <Button fx:id="deleteTaskButton" text="✓" onAction="#handleDeleteTask" prefWidth="50" prefHeight="40"
+                style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-size: 20px; -fx-background-radius: 6; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 4, 0, 0, 1);"/>
+        <Button fx:id="undoButton" text="↩" onAction="#handleUndo" prefWidth="50" prefHeight="40" visible="false" managed="false"
+                style="-fx-background-color: #e67e22; -fx-text-fill: white; -fx-font-size: 20px; -fx-background-radius: 6; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 4, 0, 0, 1);"/>
     </HBox>
 
     <!-- New Task Section -->
     <HBox spacing="8.0" alignment="CENTER_LEFT">
-        <TextField fx:id="newTaskTextField" promptText="New task..." prefHeight="40" style="-fx-font-size: 14px;" HBox.hgrow="ALWAYS"/>
-        <Button fx:id="addTaskButton" text="+" onAction="#handleAddTask" prefWidth="50" prefHeight="40" style="-fx-font-size: 22px; -fx-font-weight: bold;"/>
+        <TextField fx:id="newTaskTextField" promptText="New task..." prefHeight="40"
+                   style="-fx-background-color: white; -fx-font-size: 14px; -fx-background-radius: 6; -fx-border-color: #dfe6e9; -fx-border-width: 1; -fx-border-radius: 6; -fx-padding: 8 12;"
+                   HBox.hgrow="ALWAYS"/>
+        <Button fx:id="addTaskButton" text="+" onAction="#handleAddTask" prefWidth="50" prefHeight="40"
+                style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-size: 22px; -fx-font-weight: bold; -fx-background-radius: 6; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 4, 0, 0, 1);"/>
     </HBox>
 
 </VBox>
