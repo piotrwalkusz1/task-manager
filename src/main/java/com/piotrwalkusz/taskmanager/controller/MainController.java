@@ -145,7 +145,7 @@ public class MainController {
 
         // Update queue size
         int queueSize = taskService.getQueueSize();
-        queueSizeLabel.setText("Queue: " + queueSize);
+        queueSizeLabel.setText("Tasks: " + queueSize);
     }
 
     private void updateButtonsState() {

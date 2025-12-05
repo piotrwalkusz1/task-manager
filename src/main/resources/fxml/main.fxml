@@ -14,7 +14,7 @@
     <VBox spacing="5.0" style="-fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 12;">
         <Label fx:id="currentTaskLabel" text="No tasks in queue" style="-fx-font-size: 18px; -fx-font-weight: bold;" wrapText="true"/>
         <Label fx:id="timeLabel" text="" style="-fx-font-size: 13px; -fx-text-fill: #666666;"/>
-        <Label fx:id="queueSizeLabel" text="Queue: 0" style="-fx-font-size: 13px; -fx-text-fill: #666666;"/>
+        <Label fx:id="queueSizeLabel" text="Tasks: 0" style="-fx-font-size: 13px; -fx-text-fill: #666666;"/>
     </VBox>
 
     <!-- Action Buttons -->
