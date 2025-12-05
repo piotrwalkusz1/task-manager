@@ -51,14 +51,4 @@ public class DatabaseConfig {
     public SqlSessionFactory getSqlSessionFactory() {
         return sqlSessionFactory;
     }
-
-    /**
-     * Close database connections
-     * Should be called when done with database (e.g., in tests)
-     */
-    public void close() {
-        if (sqlSessionFactory != null && sqlSessionFactory.getConfiguration().getEnvironment().getDataSource() instanceof org.apache.ibatis.datasource.pooled.PooledDataSource pooledDataSource) {
-            pooledDataSource.forceCloseAll();
-        }
-    }
 }
