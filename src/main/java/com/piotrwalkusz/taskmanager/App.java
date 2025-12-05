@@ -13,8 +13,12 @@ public class App extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/main.fxml"));
         Parent root = loader.load();
 
+        Scene scene = new Scene(root);
         primaryStage.setTitle("Task Manager");
-        primaryStage.setScene(new Scene(root, 800, 600));
+        primaryStage.setScene(scene);
+        primaryStage.sizeToScene();
+        primaryStage.setMinWidth(400);
+        primaryStage.setMinHeight(200);
         primaryStage.show();
     }
 

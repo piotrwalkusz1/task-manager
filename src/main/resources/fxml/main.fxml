@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.Priority?>
 
-<VBox spacing="10.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.piotrwalkusz.taskmanager.controller.MainController" style="-fx-padding: 15;">
+<VBox spacing="10.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.piotrwalkusz.taskmanager.controller.MainController" style="-fx-padding: 15;" prefWidth="450">
 
     <!-- Current Task Section -->
     <VBox spacing="5.0" style="-fx-border-color: #cccccc; -fx-border-width: 1; -fx-padding: 12;">
