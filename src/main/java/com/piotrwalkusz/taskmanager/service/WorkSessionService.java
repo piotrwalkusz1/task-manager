@@ -120,4 +120,14 @@ public class WorkSessionService {
         long minutes = (seconds % 3600) / 60;
         return String.format("%dh %dm", hours, minutes);
     }
+
+    /**
+     * Format seconds to human-readable time with seconds (Xh Ym Zs)
+     */
+    public String formatTimeWithSeconds(long seconds) {
+        long hours = seconds / 3600;
+        long minutes = (seconds % 3600) / 60;
+        long secs = seconds % 60;
+        return String.format("%dh %dm %ds", hours, minutes, secs);
+    }
 }

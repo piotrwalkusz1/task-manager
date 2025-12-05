@@ -178,7 +178,7 @@ public class MainController {
         long dailySeconds = workSessionService.getDailyTimeSeconds(currentTask.getId());
         long totalSeconds = workSessionService.getTotalTimeSeconds(currentTask.getId());
 
-        String dailyTime = workSessionService.formatTime(dailySeconds);
+        String dailyTime = workSessionService.formatTimeWithSeconds(dailySeconds);
         String totalTime = workSessionService.formatTime(totalSeconds);
 
         timeLabel.setText(String.format("Time today: %s (Total: %s)", dailyTime, totalTime));
