@@ -90,6 +90,10 @@
 6. **UI Layer:**
    - ✅ main.fxml with all required UI components (task display, time labels, buttons, input field)
    - ✅ Delete Task button and Undo button in main.fxml
+   - ✅ Compact UI layout optimized for minimal space usage
+   - ✅ Icon-only buttons with Unicode symbols (▶/⏸ for Start/Pause, ⤵ for Next Task, ✓ for Done, ↩ for Undo)
+   - ✅ Optimized font sizes (18px for task name, 13px for time/queue info, 14px for input)
+   - ✅ Compact spacing (10px main, 8px between buttons) and padding (15px main, 12px task section)
    - ✅ MainController with complete business logic
    - ✅ MainController handlers for delete/undo operations
    - ✅ Undo button visibility managed dynamically (visible only when there are deleted tasks)
@@ -116,10 +120,11 @@
 - ✅ **Automatic cleanup** - deleted tasks permanently removed when starting work or rotating
 - ✅ Real-time time tracking display (updates every second)
 - ✅ Queue size counter
+- ✅ **Compact, icon-based UI** - minimal space usage with clear visual feedback
 - ✅ All business operations are thread-safe and atomic
 - ✅ Comprehensive unit test coverage
 
 **Next Steps:**
 - Implement task name editing
 - Implement priority flag for tasks
-- UI/UX improvements
+- Further UI/UX refinements based on user feedback

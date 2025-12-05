@@ -145,16 +145,16 @@ public class MainController {
 
         // Update queue size
         int queueSize = taskService.getQueueSize();
-        queueSizeLabel.setText("Tasks in queue: " + queueSize);
+        queueSizeLabel.setText("Queue: " + queueSize);
     }
 
     private void updateButtonsState() {
         boolean hasTask = currentTask != null;
         boolean isActive = hasTask && workSessionService.hasActiveWorkSession(currentTask.getId());
 
-        // Start/Pause button
+        // Start/Pause button (icon changes)
         startPauseButton.setDisable(!hasTask);
-        startPauseButton.setText(isActive ? "Pause" : "Start");
+        startPauseButton.setText(isActive ? "⏸" : "▶");
 
         // Next Task button
         nextTaskButton.setDisable(!hasTask);
