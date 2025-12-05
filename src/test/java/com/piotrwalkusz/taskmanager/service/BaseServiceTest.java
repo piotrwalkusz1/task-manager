@@ -2,6 +2,7 @@ package com.piotrwalkusz.taskmanager.service;
 
 import com.piotrwalkusz.taskmanager.config.DatabaseConfig;
 import org.apache.ibatis.session.SqlSession;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.io.TempDir;
@@ -42,6 +43,14 @@ abstract class BaseServiceTest {
             session.commit();
         } catch (Exception e) {
             throw new RuntimeException("Failed to clear database", e);
+        }
+    }
+
+    @AfterAll
+    static void closeDatabase() {
+        // Close database connections to release file locks
+        if (databaseConfig != null) {
+            databaseConfig.close();
         }
     }
 }
