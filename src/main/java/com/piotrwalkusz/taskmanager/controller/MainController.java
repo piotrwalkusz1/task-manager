@@ -109,6 +109,9 @@ public class MainController {
             return;
         }
 
+        // Cleanup old deleted tasks before deleting current one
+        taskService.cleanupDeletedTasks();
+
         // Soft delete task
         taskService.softDeleteTask(currentTask.getId());
 

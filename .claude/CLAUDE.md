@@ -97,7 +97,8 @@
    - ✅ MainController with complete business logic
    - ✅ MainController handlers for delete/undo operations
    - ✅ Undo button visibility managed dynamically (visible only when there are deleted tasks)
-   - ✅ Automatic cleanup of deleted tasks before Start/Pause or Next Task
+   - ✅ Automatic cleanup of deleted tasks before Start/Pause, Next Task, AND Delete Task
+   - ✅ Bug fixed: cleanup now prevents accumulation of multiple soft-deleted tasks
    - ✅ Timeline for real-time time updates (every second)
    - ✅ Event handlers for Add Task, Start/Pause, Next Task, Delete Task, Undo
 
@@ -117,7 +118,7 @@
 - ✅ Rotate tasks to end of queue (transactional with auto-pause)
 - ✅ **Delete current task (soft delete with undo)**
 - ✅ **Undo delete functionality** - restores deleted tasks
-- ✅ **Automatic cleanup** - deleted tasks permanently removed when starting work or rotating
+- ✅ **Automatic cleanup** - deleted tasks permanently removed before any operation (Start/Pause, Next Task, Delete Task)
 - ✅ Real-time time tracking display (updates every second)
 - ✅ Queue size counter
 - ✅ **Compact, icon-based UI** - minimal space usage with clear visual feedback
