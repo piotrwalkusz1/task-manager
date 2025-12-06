@@ -73,8 +73,8 @@ public class MainController {
     @FXML
     public void initialize() {
 
-        // Setup time update timeline (runs every second)
-        timeUpdateTimeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> updateTimeDisplay()));
+        // Setup time update timeline (runs every 100ms for smooth updates)
+        timeUpdateTimeline = new Timeline(new KeyFrame(Duration.millis(100), event -> updateTimeDisplay()));
         timeUpdateTimeline.setCycleCount(Animation.INDEFINITE);
         timeUpdateTimeline.play();
 

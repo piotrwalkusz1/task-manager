@@ -125,7 +125,7 @@
    - ✅ **Session lifecycle**: created in memory → saved to DB only when paused/task switched/app closed
    - ✅ **Optimized time tracking** - local calculation using Duration.between(), no DB queries per second
    - ✅ **Completed time caching** - completedDailySeconds/completedTotalSeconds loaded once when task changes, prevents double counting
-   - ✅ **Smooth timer updates** - no more skipped seconds or 2-second jumps, updates every second precisely
+   - ✅ **Smooth timer updates** - updates every 100ms for smooth display, eliminates 2-second jumps
    - ✅ **Time display format**: "Time: Xh Ym Zs (Today: Xh Ym, Total: Xh Ym)"
    - ✅ **Current session time** - resets when switching tasks, persists through pause/resume
    - ✅ **Accurate time calculation** - no double counting of sessions in Today/Total time
