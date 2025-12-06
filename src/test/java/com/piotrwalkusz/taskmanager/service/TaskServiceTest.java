@@ -136,4 +136,22 @@ class TaskServiceTest extends BaseServiceTest {
         assertEquals("Modified Task 1", allTasks.get(0).getName());
         assertEquals("Task 2", allTasks.get(1).getName());
     }
+
+    @Test
+    @DisplayName("Should pause active session when soft deleting task")
+    void testSoftDeleteTaskPausesActiveSession() {
+        // Given
+        taskService.addTask("Task 1");
+        Task task1 = taskService.getCurrentTask();
+
+        // Start work session
+        workSessionService.startWorkSession(task1.getId());
+        assertTrue(workSessionService.hasActiveWorkSession(task1.getId()));
+
+        // When - soft delete should pause active session
+        taskService.softDeleteTask(task1.getId());
+
+        // Then
+        assertFalse(workSessionService.hasActiveWorkSession(task1.getId()));
+    }
 }

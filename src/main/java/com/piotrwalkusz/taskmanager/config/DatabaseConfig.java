@@ -28,9 +28,12 @@ public class DatabaseConfig {
      * Create DatabaseConfig with custom database URL
      */
     public DatabaseConfig(String dbUrl) {
+        // Enable foreign keys for SQLite
+        String dbUrlWithForeignKeys = dbUrl + "?foreign_keys=on";
+
         // Run Flyway migrations
         Flyway flyway = Flyway.configure()
-                .dataSource(dbUrl, null, null)
+                .dataSource(dbUrlWithForeignKeys, null, null)
                 .locations("classpath:db/migration")
                 .load();
         flyway.migrate();
@@ -38,7 +41,7 @@ public class DatabaseConfig {
         // Initialize MyBatis with URL override
         try (InputStream inputStream = Resources.getResourceAsStream("mybatis-config.xml")) {
             Properties properties = new Properties();
-            properties.setProperty("url", dbUrl);
+            properties.setProperty("url", dbUrlWithForeignKeys);
             this.sqlSessionFactory = new SqlSessionFactoryBuilder().build(inputStream, properties);
         } catch (IOException e) {
             throw new RuntimeException("Failed to initialize MyBatis", e);

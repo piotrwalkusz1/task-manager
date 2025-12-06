@@ -78,7 +78,8 @@
 
 4. **Service Layer:**
    - ✅ TaskService with transactional rotateTaskWithPause() method
-   - ✅ TaskService soft delete methods (softDeleteTask, undoDelete, hasDeletedTask, cleanupDeletedTasks)
+   - ✅ TaskService transactional softDeleteTask() - pauses active session before soft delete
+   - ✅ TaskService soft delete methods (undoDelete, hasDeletedTask, cleanupDeletedTasks)
    - ✅ TaskService updateTaskName method for editing task names
    - ✅ WorkSessionService with transactional toggleWorkSession() method
    - ✅ All business operations are atomic and transactional
@@ -88,6 +89,7 @@
 5. **Configuration:**
    - ✅ DatabaseConfig with Flyway initialization and MyBatis setup
    - ✅ DatabaseConfig uses dependency injection pattern (accepts dbUrl in constructor)
+   - ✅ DatabaseConfig enables SQLite foreign keys via URL parameter (?foreign_keys=on)
    - ✅ MyBatis config uses Properties to override database URL (simple solution)
    - ✅ Maven compiler plugin configured with Lombok annotation processor
 
@@ -115,9 +117,9 @@
 7. **Testing:**
    - ✅ BaseServiceTest with common setup/cleanup
    - ✅ Each test gets isolated database in temp directory (JUnit @TempDir)
-   - ✅ TaskServiceTest - 8 tests covering queue operations, rotation, and task name editing
+   - ✅ TaskServiceTest - 9 tests covering queue operations, rotation, task name editing, and soft delete with session pause
    - ✅ WorkSessionServiceTest - 6 tests covering session management
-   - ✅ All tests passing (15 tests, 0 failures, ~2.7s execution time)
+   - ✅ All tests passing (16 tests, 0 failures, ~2.8s execution time)
    - ✅ No Thread.sleep() - tests are fast and stable
 
 **Application Features Working:**
