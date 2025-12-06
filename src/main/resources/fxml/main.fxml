@@ -35,7 +35,7 @@
 
     <!-- New Task Section -->
     <HBox spacing="8.0" alignment="CENTER_LEFT">
-        <TextField fx:id="newTaskTextField" promptText="New task..." prefHeight="40"
+        <TextField fx:id="newTaskTextField" promptText="New task..." prefHeight="40" onAction="#handleAddTask"
                    style="-fx-background-color: white; -fx-font-size: 14px; -fx-background-radius: 6; -fx-border-color: #dfe6e9; -fx-border-width: 1; -fx-border-radius: 6; -fx-padding: 8 12;"
                    HBox.hgrow="ALWAYS"/>
         <Button fx:id="addTaskButton" text="+" onAction="#handleAddTask" prefWidth="50" prefHeight="40"
