@@ -368,4 +368,14 @@ public class MainController {
         }
         return false;
     }
+
+    public void onApplicationClose() {
+        // Save active session before closing application
+        if (activeWorkSession != null) {
+            activeWorkSession.setEndTime(Instant.now());
+            workSessionService.saveWorkSession(activeWorkSession);
+        }
+        // Stop the timeline to allow clean shutdown
+        timeUpdateTimeline.stop();
+    }
 }

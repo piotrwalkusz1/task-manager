@@ -116,6 +116,7 @@
    - ✅ Bug fixed: cleanup now prevents accumulation of multiple soft-deleted tasks
    - ✅ Timeline for real-time time updates (every second)
    - ✅ Event handlers for Add Task, Start/Pause, Next Task, Delete Task, Undo, Edit Task Name
+   - ✅ **Application close handler** - saves active session when app closes
    - ✅ **Selectable text labels** - all text fields (task name, time, queue size) are selectable and copyable
    - ✅ **Text selection preservation** - equality checks before setText() to prevent selection reset
    - ✅ **Focus management** - focusTraversable="false" on read-only fields prevents unwanted focus/selection
@@ -154,6 +155,7 @@
 - ✅ **Completed time caching** - daily/total time from DB loaded once per task, prevents double counting
 - ✅ **Current session tracking** - "Time" field shows time since task was displayed, resets on task switch
 - ✅ **Session persistence** - sessions survive pause/resume, reset only on task switch
+- ✅ **Session persistence on close** - active sessions are saved to database when app closes
 - ✅ **Accurate aggregation** - Today/Total time correctly sums completed sessions from DB + current task sessions
 - ✅ Queue size counter
 - ✅ **Compact, icon-based UI** - minimal space usage with clear visual feedback
