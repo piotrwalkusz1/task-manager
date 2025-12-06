@@ -96,7 +96,7 @@
 6. **UI Layer:**
    - ✅ main.fxml with all required UI components (task display, time labels, buttons, input field)
    - ✅ Delete Task button and Undo button in main.fxml
-   - ✅ Task name editing UI with StackPane containing Label and TextField
+   - ✅ Task name editing UI with StackPane containing TextField (read-only) and TextField (edit mode)
    - ✅ Compact UI layout optimized for minimal space usage
    - ✅ Icon-only buttons with Unicode symbols (▶/⏸ for Start/Pause, ⤵ for Next Task, ✓ for Done, ↩ for Undo)
    - ✅ Optimized font sizes (18px for task name, 13px for time/queue info, 14px for input)
@@ -104,15 +104,19 @@
    - ✅ MainController with complete business logic
    - ✅ MainController handlers for delete/undo operations
    - ✅ MainController task name editing with double-click handler
-   - ✅ Hand cursor on task name hover for better UX
+   - ✅ Hand cursor removed from "No tasks in queue" label (dynamic cursor in refreshUI)
    - ✅ Left-aligned task name (StackPane alignment="CENTER_LEFT")
    - ✅ Event filter to save edits when clicking outside TextField
+   - ✅ Event filter to remove focus from new task field when clicking elsewhere
    - ✅ isDescendant() helper to allow text selection within TextField
    - ✅ Undo button visibility managed dynamically (visible only when there are deleted tasks)
    - ✅ Automatic cleanup of deleted tasks before Start/Pause, Next Task, AND Delete Task
    - ✅ Bug fixed: cleanup now prevents accumulation of multiple soft-deleted tasks
    - ✅ Timeline for real-time time updates (every second)
    - ✅ Event handlers for Add Task, Start/Pause, Next Task, Delete Task, Undo, Edit Task Name
+   - ✅ **Selectable text labels** - all text fields (task name, time, queue size) are selectable and copyable
+   - ✅ **Text selection preservation** - equality checks before setText() to prevent selection reset
+   - ✅ **Focus management** - focusTraversable="false" on read-only fields prevents unwanted focus/selection
 
 7. **Testing:**
    - ✅ BaseServiceTest with common setup/cleanup
@@ -124,7 +128,7 @@
 
 **Application Features Working:**
 - ✅ Database automatically created on first run
-- ✅ Add new tasks to queue
+- ✅ Add new tasks to queue (via + button or Enter key)
 - ✅ Display current task (head of queue)
 - ✅ Start/Pause work sessions (transactional toggle)
 - ✅ Rotate tasks to end of queue (transactional with auto-pause)
@@ -135,6 +139,9 @@
 - ✅ Real-time time tracking display (updates every second)
 - ✅ Queue size counter
 - ✅ **Compact, icon-based UI** - minimal space usage with clear visual feedback
+- ✅ **Selectable and copyable text** - all labels can be selected and copied without entering edit mode
+- ✅ **Smart focus management** - new task field loses focus after adding task or clicking elsewhere
+- ✅ **Preserved text selection** - selection doesn't reset during timer updates
 - ✅ All business operations are thread-safe and atomic
 - ✅ Comprehensive unit test coverage
 

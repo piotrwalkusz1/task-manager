@@ -20,10 +20,10 @@ import javafx.util.Duration;
 public class MainController {
 
     @FXML
-    private Label currentTaskLabel;
+    private TextField currentTaskLabel;
 
     @FXML
-    private Label timeLabel;
+    private TextField timeLabel;
 
     @FXML
     private Button startPauseButton;
@@ -32,7 +32,7 @@ public class MainController {
     private Button nextTaskButton;
 
     @FXML
-    private Label queueSizeLabel;
+    private TextField queueSizeLabel;
 
     @FXML
     private TextField newTaskTextField;
@@ -175,13 +175,10 @@ public class MainController {
         // Load current task
         currentTask = taskService.getCurrentTask();
 
-        // Update task name and cursor
-        if (currentTask != null) {
-            currentTaskLabel.setText(currentTask.getName());
-            currentTaskLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-cursor: hand;");
-        } else {
-            currentTaskLabel.setText("No tasks in queue");
-            currentTaskLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-cursor: default;");
+        // Update task name (only if changed to preserve text selection)
+        String newTaskText = (currentTask != null) ? currentTask.getName() : "No tasks in queue";
+        if (!currentTaskLabel.getText().equals(newTaskText)) {
+            currentTaskLabel.setText(newTaskText);
         }
 
         // Update buttons state
@@ -193,9 +190,12 @@ public class MainController {
         // Update time display
         updateTimeDisplay();
 
-        // Update queue size
+        // Update queue size (only if changed to preserve text selection)
         int queueSize = taskService.getQueueSize();
-        queueSizeLabel.setText("Tasks: " + queueSize);
+        String newQueueText = "Tasks: " + queueSize;
+        if (!queueSizeLabel.getText().equals(newQueueText)) {
+            queueSizeLabel.setText(newQueueText);
+        }
     }
 
     private void updateButtonsState() {
@@ -220,18 +220,23 @@ public class MainController {
     }
 
     private void updateTimeDisplay() {
+        String newText;
         if (currentTask == null) {
-            timeLabel.setText("");
-            return;
+            newText = "";
+        } else {
+            long dailySeconds = workSessionService.getDailyTimeSeconds(currentTask.getId());
+            long totalSeconds = workSessionService.getTotalTimeSeconds(currentTask.getId());
+
+            String dailyTime = workSessionService.formatTimeWithSeconds(dailySeconds);
+            String totalTime = workSessionService.formatTime(totalSeconds);
+
+            newText = String.format("Time today: %s (Total: %s)", dailyTime, totalTime);
         }
 
-        long dailySeconds = workSessionService.getDailyTimeSeconds(currentTask.getId());
-        long totalSeconds = workSessionService.getTotalTimeSeconds(currentTask.getId());
-
-        String dailyTime = workSessionService.formatTimeWithSeconds(dailySeconds);
-        String totalTime = workSessionService.formatTime(totalSeconds);
-
-        timeLabel.setText(String.format("Time today: %s (Total: %s)", dailyTime, totalTime));
+        // Only update if text actually changed to preserve text selection
+        if (!timeLabel.getText().equals(newText)) {
+            timeLabel.setText(newText);
+        }
     }
 
     private void startEditingTaskName() {
