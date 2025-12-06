@@ -46,6 +46,17 @@ public class TaskService {
     }
 
     /**
+     * Move task to end of queue
+     */
+    public void rotateTask(Long taskId) {
+        try (SqlSession session = databaseConfig.getSqlSessionFactory().openSession()) {
+            TaskMapper taskMapper = session.getMapper(TaskMapper.class);
+            taskMapper.rotateTask(taskId);
+            session.commit();
+        }
+    }
+
+    /**
      * Move task to end of queue (transactional)
      * If task has active work session, pause it first in the same transaction
      */
@@ -98,23 +109,12 @@ public class TaskService {
     }
 
     /**
-     * Soft delete task by ID (transactional)
-     * If task has active work session, pause it first in the same transaction
+     * Soft delete task by ID
      */
     public void softDeleteTask(Long taskId) {
         try (SqlSession session = databaseConfig.getSqlSessionFactory().openSession()) {
-            WorkSessionMapper workSessionMapper = session.getMapper(WorkSessionMapper.class);
             TaskMapper taskMapper = session.getMapper(TaskMapper.class);
-
-            // Check and pause active session in same transaction
-            boolean hasActiveSession = workSessionMapper.hasActiveWorkSession(taskId);
-            if (hasActiveSession) {
-                workSessionMapper.pauseWorkSession(taskId);
-            }
-
-            // Soft delete task
             taskMapper.softDeleteTask(taskId);
-
             session.commit();
         }
     }

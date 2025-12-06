@@ -84,25 +84,6 @@ class TaskServiceTest extends BaseServiceTest {
     }
 
     @Test
-    @DisplayName("Should pause active session when rotating task")
-    void testRotateTaskPausesActiveSession() {
-        // Given
-        taskService.addTask("Task 1");
-        taskService.addTask("Task 2");
-        Task task1 = taskService.getCurrentTask();
-
-        // Start work session
-        workSessionService.startWorkSession(task1.getId());
-        assertTrue(workSessionService.hasActiveWorkSession(task1.getId()));
-
-        // When - rotate should pause active session
-        taskService.rotateTaskWithPause(task1.getId());
-
-        // Then
-        assertFalse(workSessionService.hasActiveWorkSession(task1.getId()));
-    }
-
-    @Test
     @DisplayName("Should update task name")
     void testUpdateTaskName() {
         // Given
@@ -137,21 +118,4 @@ class TaskServiceTest extends BaseServiceTest {
         assertEquals("Task 2", allTasks.get(1).getName());
     }
 
-    @Test
-    @DisplayName("Should pause active session when soft deleting task")
-    void testSoftDeleteTaskPausesActiveSession() {
-        // Given
-        taskService.addTask("Task 1");
-        Task task1 = taskService.getCurrentTask();
-
-        // Start work session
-        workSessionService.startWorkSession(task1.getId());
-        assertTrue(workSessionService.hasActiveWorkSession(task1.getId()));
-
-        // When - soft delete should pause active session
-        taskService.softDeleteTask(task1.getId());
-
-        // Then
-        assertFalse(workSessionService.hasActiveWorkSession(task1.getId()));
-    }
 }

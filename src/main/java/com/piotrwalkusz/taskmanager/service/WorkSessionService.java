@@ -19,15 +19,11 @@ public class WorkSessionService {
     }
 
     /**
-     * Start new work session for task
+     * Save work session to database (with end_time set)
      */
-    public void startWorkSession(Long taskId) {
+    public void saveWorkSession(WorkSession workSession) {
         try (SqlSession session = databaseConfig.getSqlSessionFactory().openSession()) {
             WorkSessionMapper mapper = session.getMapper(WorkSessionMapper.class);
-            WorkSession workSession = WorkSession.builder()
-                    .taskId(taskId)
-                    .startTime(Instant.now())
-                    .build();
             mapper.insertWorkSession(workSession);
             session.commit();
         }

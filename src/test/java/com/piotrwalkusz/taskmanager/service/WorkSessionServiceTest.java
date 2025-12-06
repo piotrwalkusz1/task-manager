@@ -8,66 +8,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class WorkSessionServiceTest extends BaseServiceTest {
 
     @Test
-    @DisplayName("Should start work session for task")
-    void testStartWorkSession() {
-        // Given
-        taskService.addTask("Test task");
-        Task task = taskService.getCurrentTask();
-
-        // When
-        workSessionService.startWorkSession(task.getId());
-
-        // Then
-        assertTrue(workSessionService.hasActiveWorkSession(task.getId()));
-        assertNotNull(workSessionService.getActiveWorkSession(task.getId()));
-    }
-
-    @Test
-    @DisplayName("Should pause active work session")
-    void testPauseWorkSession() {
-        // Given
-        taskService.addTask("Test task");
-        Task task = taskService.getCurrentTask();
-        workSessionService.startWorkSession(task.getId());
-
-        // When
-        workSessionService.pauseWorkSession(task.getId());
-
-        // Then
-        assertFalse(workSessionService.hasActiveWorkSession(task.getId()));
-        assertNull(workSessionService.getActiveWorkSession(task.getId()));
-    }
-
-    @Test
-    @DisplayName("Should toggle work session from inactive to active")
-    void testToggleWorkSessionStartsSession() {
-        // Given
-        taskService.addTask("Test task");
-        Task task = taskService.getCurrentTask();
-
-        // When
-        workSessionService.toggleWorkSession(task.getId());
-
-        // Then
-        assertTrue(workSessionService.hasActiveWorkSession(task.getId()));
-    }
-
-    @Test
-    @DisplayName("Should toggle work session from active to paused")
-    void testToggleWorkSessionPausesSession() {
-        // Given
-        taskService.addTask("Test task");
-        Task task = taskService.getCurrentTask();
-        workSessionService.startWorkSession(task.getId());
-
-        // When
-        workSessionService.toggleWorkSession(task.getId());
-
-        // Then
-        assertFalse(workSessionService.hasActiveWorkSession(task.getId()));
-    }
-
-    @Test
     @DisplayName("Should format time correctly")
     void testFormatTime() {
         assertEquals("0h 0m", workSessionService.formatTime(0));

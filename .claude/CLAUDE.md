@@ -58,8 +58,9 @@
 1. **Database Layer:**
    - ✅ Flyway migration V1__Create_initial_schema.sql
    - ✅ Flyway migration V2__Add_soft_delete.sql (adds is_deleted flag)
+   - ✅ Flyway migration V4__Remove_incomplete_work_sessions.sql (cleanup for new architecture)
    - ✅ task and work_session tables with proper constraints
-   - ✅ Unique indexes and trigger for single active session
+   - ✅ **Memory-based session architecture** - DB stores only completed sessions (end_time required)
    - ✅ Soft delete support for tasks
 
 2. **Model Layer:**
@@ -72,20 +73,20 @@
    - ✅ TaskMapper soft delete methods (hasDeletedTask, softDeleteTask, undoDelete, cleanupDeletedTasks)
    - ✅ TaskMapper updateTaskName method for editing task names
    - ✅ All queries filter out deleted tasks (WHERE is_deleted = 0)
-   - ✅ WorkSessionMapper interface and XML (insertWorkSession, pauseWorkSession, hasActiveWorkSession, getActiveWorkSession)
-   - ✅ WorkSessionMapper time calculations (getDailyTimeSeconds, getTotalTimeSeconds) - returns only completed sessions
+   - ✅ WorkSessionMapper interface and XML (insertWorkSession, hasActiveWorkSession, getActiveWorkSession)
+   - ✅ WorkSessionMapper time calculations (getDailyTimeSeconds, getTotalTimeSeconds) - **only completed sessions (WHERE end_time IS NOT NULL)**
    - ✅ InstantTypeHandler for UTC timestamp conversion
    - ✅ mybatis-config.xml with SQLite configuration
 
 4. **Service Layer:**
-   - ✅ TaskService with transactional rotateTaskWithPause() method
-   - ✅ TaskService transactional softDeleteTask() - pauses active session before soft delete
+   - ✅ TaskService with rotateTask() and rotateTaskWithPause() methods
+   - ✅ TaskService softDeleteTask() method (simplified - session handling in controller)
    - ✅ TaskService soft delete methods (undoDelete, hasDeletedTask, cleanupDeletedTasks)
    - ✅ TaskService updateTaskName method for editing task names
-   - ✅ WorkSessionService with transactional toggleWorkSession() method
+   - ✅ WorkSessionService with saveWorkSession() method - saves completed sessions to DB
+   - ✅ **Session management moved to controller layer** - services only handle DB persistence
    - ✅ All business operations are atomic and transactional
    - ✅ Proper transaction boundaries using SqlSession
-   - ✅ No race conditions - check and modify in same transaction
 
 5. **Configuration:**
    - ✅ DatabaseConfig with Flyway initialization and MyBatis setup
@@ -118,29 +119,38 @@
    - ✅ **Selectable text labels** - all text fields (task name, time, queue size) are selectable and copyable
    - ✅ **Text selection preservation** - equality checks before setText() to prevent selection reset
    - ✅ **Focus management** - focusTraversable="false" on read-only fields prevents unwanted focus/selection
-   - ✅ **Optimized time tracking** - active session cached in memory, time calculated locally without DB queries
+   - ✅ **Memory-based session management** - active sessions stored in controller, not in database
+   - ✅ **Session tracking fields**: activeWorkSession (current), currentTaskSessions (List), lastCurrentTaskId
+   - ✅ **Session lifecycle**: created in memory → saved to DB only when paused/task switched/app closed
+   - ✅ **Optimized time tracking** - local calculation using Duration.between(), no DB queries per second
    - ✅ **Smooth timer updates** - no more skipped seconds or 2-second jumps, updates every second precisely
+   - ✅ **Time display format**: "Time: Xh Ym Zs (Today: Xh Ym, Total: Xh Ym)"
+   - ✅ **Current session time** - resets when switching tasks, persists through pause/resume
 
 7. **Testing:**
    - ✅ BaseServiceTest with common setup/cleanup
    - ✅ Each test gets isolated database in temp directory (JUnit @TempDir)
-   - ✅ TaskServiceTest - 9 tests covering queue operations, rotation, task name editing, and soft delete with session pause
-   - ✅ WorkSessionServiceTest - 6 tests covering session management
-   - ✅ All tests passing (16 tests, 0 failures, ~2.8s execution time)
+   - ✅ TaskServiceTest - 7 tests covering queue operations, rotation, task name editing
+   - ✅ WorkSessionServiceTest - 2 tests covering time formatting and DB queries
+   - ✅ All tests passing (10 tests, 0 failures)
    - ✅ No Thread.sleep() - tests are fast and stable
+   - ✅ **Tests updated for new architecture** - removed 6 obsolete tests for removed methods
 
 **Application Features Working:**
 - ✅ Database automatically created on first run
 - ✅ Add new tasks to queue (via + button or Enter key)
 - ✅ Display current task (head of queue)
-- ✅ Start/Pause work sessions (transactional toggle)
-- ✅ Rotate tasks to end of queue (transactional with auto-pause)
+- ✅ Start/Pause work sessions (memory-based, saved to DB only when completed)
+- ✅ Rotate tasks to end of queue (auto-saves active session before rotation)
 - ✅ **Edit task name** - double-click to edit, Enter to save, Escape to cancel, click outside to save
 - ✅ **Delete current task (soft delete with undo)**
 - ✅ **Undo delete functionality** - restores deleted tasks
 - ✅ **Automatic cleanup** - deleted tasks permanently removed before any operation (Start/Pause, Next Task, Delete Task)
 - ✅ **Real-time time tracking** - smooth updates every second without database queries
-- ✅ **Efficient time calculation** - active session cached in memory, completed time from DB only on state changes
+- ✅ **Memory-based session architecture** - active sessions in memory, DB stores only completed sessions
+- ✅ **Efficient time calculation** - local Duration.between() for active session, DB query only on state changes
+- ✅ **Current session tracking** - "Time" field shows time since task was displayed, resets on task switch
+- ✅ **Session persistence** - sessions survive pause/resume, reset only on task switch
 - ✅ Queue size counter
 - ✅ **Compact, icon-based UI** - minimal space usage with clear visual feedback
 - ✅ **Selectable and copyable text** - all labels can be selected and copied without entering edit mode

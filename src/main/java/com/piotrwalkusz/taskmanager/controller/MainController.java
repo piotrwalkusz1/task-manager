@@ -19,6 +19,9 @@ import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class MainController {
 
@@ -60,9 +63,11 @@ public class MainController {
     private final WorkSessionService workSessionService = new WorkSessionService(databaseConfig);
 
     private Task currentTask;
-    private WorkSession activeWorkSession;
-    private long completedDailySeconds; // Time from completed sessions today
-    private long completedTotalSeconds; // Time from all completed sessions
+    private Long lastCurrentTaskId; // Track when current task changes
+    private WorkSession activeWorkSession; // Active session in memory only (not saved to DB until paused)
+    private List<WorkSession> currentTaskSessions = new ArrayList<>(); // All sessions since task was displayed
+    private long completedDailySeconds; // Time from DB (completed sessions today)
+    private long completedTotalSeconds; // Time from DB (all completed sessions)
     private Timeline timeUpdateTimeline;
 
     @FXML
@@ -133,8 +138,19 @@ public class MainController {
         // Cleanup deleted tasks before starting work
         taskService.cleanupDeletedTasks();
 
-        // Toggle work session (transactional)
-        workSessionService.toggleWorkSession(currentTask.getId());
+        if (activeWorkSession == null) {
+            // Start new session in memory (not saved to DB yet)
+            activeWorkSession = WorkSession.builder()
+                    .taskId(currentTask.getId())
+                    .startTime(Instant.now())
+                    .build();
+        } else {
+            // Pause active session - set end time and save to DB
+            activeWorkSession.setEndTime(Instant.now());
+            workSessionService.saveWorkSession(activeWorkSession);
+            currentTaskSessions.add(activeWorkSession);
+            activeWorkSession = null;
+        }
 
         refreshUI();
     }
@@ -145,11 +161,19 @@ public class MainController {
             return;
         }
 
+        // Save active session before rotating
+        if (activeWorkSession != null) {
+            activeWorkSession.setEndTime(Instant.now());
+            workSessionService.saveWorkSession(activeWorkSession);
+            currentTaskSessions.add(activeWorkSession);
+            activeWorkSession = null;
+        }
+
         // Cleanup deleted tasks before rotating
         taskService.cleanupDeletedTasks();
 
-        // Pause if in progress and rotate task (transactional)
-        taskService.rotateTaskWithPause(currentTask.getId());
+        // Rotate task
+        taskService.rotateTask(currentTask.getId());
 
         refreshUI();
     }
@@ -158,6 +182,14 @@ public class MainController {
     private void handleDeleteTask() {
         if (currentTask == null) {
             return;
+        }
+
+        // Save active session before deleting
+        if (activeWorkSession != null) {
+            activeWorkSession.setEndTime(Instant.now());
+            workSessionService.saveWorkSession(activeWorkSession);
+            currentTaskSessions.add(activeWorkSession);
+            activeWorkSession = null;
         }
 
         // Cleanup old deleted tasks before deleting current one
@@ -181,13 +213,18 @@ public class MainController {
         // Load current task
         currentTask = taskService.getCurrentTask();
 
-        // Load work session state from database
+        // Detect task change - reset session list
+        Long currentTaskId = currentTask != null ? currentTask.getId() : null;
+        if (!Objects.equals(lastCurrentTaskId, currentTaskId)) {
+            currentTaskSessions.clear();
+            lastCurrentTaskId = currentTaskId;
+        }
+
+        // Load work session state from database (completed sessions only)
         if (currentTask != null) {
-            activeWorkSession = workSessionService.getActiveWorkSession(currentTask.getId());
             completedDailySeconds = workSessionService.getDailyTimeSeconds(currentTask.getId());
             completedTotalSeconds = workSessionService.getTotalTimeSeconds(currentTask.getId());
         } else {
-            activeWorkSession = null;
             completedDailySeconds = 0;
             completedTotalSeconds = 0;
         }
@@ -241,23 +278,34 @@ public class MainController {
         if (currentTask == null) {
             newText = "";
         } else {
-            // Calculate total time: completed sessions + active session (if any)
-            long dailySeconds = completedDailySeconds;
-            long totalSeconds = completedTotalSeconds;
+            // Calculate time from current task sessions (since task was displayed)
+            long currentTaskSeconds = 0;
+            for (WorkSession session : currentTaskSessions) {
+                long sessionSeconds = java.time.Duration.between(
+                    session.getStartTime(),
+                    session.getEndTime()
+                ).getSeconds();
+                currentTaskSeconds += sessionSeconds;
+            }
 
+            // Add active session time if any
             if (activeWorkSession != null) {
                 long activeSessionSeconds = java.time.Duration.between(
                     activeWorkSession.getStartTime(),
                     Instant.now()
                 ).getSeconds();
-                dailySeconds += activeSessionSeconds;
-                totalSeconds += activeSessionSeconds;
+                currentTaskSeconds += activeSessionSeconds;
             }
 
-            String dailyTime = workSessionService.formatTimeWithSeconds(dailySeconds);
+            // Calculate total time: completed sessions from DB + current task sessions
+            long dailySeconds = completedDailySeconds + currentTaskSeconds;
+            long totalSeconds = completedTotalSeconds + currentTaskSeconds;
+
+            String currentTime = workSessionService.formatTimeWithSeconds(currentTaskSeconds);
+            String todayTime = workSessionService.formatTime(dailySeconds);
             String totalTime = workSessionService.formatTime(totalSeconds);
 
-            newText = String.format("Time today: %s (Total: %s)", dailyTime, totalTime);
+            newText = String.format("Time: %s (Today: %s, Total: %s)", currentTime, todayTime, totalTime);
         }
 
         // Only update if text actually changed to preserve text selection
