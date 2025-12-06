@@ -59,8 +59,9 @@
    - ✅ Flyway migration V1__Create_initial_schema.sql
    - ✅ Flyway migration V2__Add_soft_delete.sql (adds is_deleted flag)
    - ✅ Flyway migration V4__Remove_incomplete_work_sessions.sql (cleanup for new architecture)
+   - ✅ Flyway migration V5__Make_end_time_required.sql (end_time NOT NULL constraint)
    - ✅ task and work_session tables with proper constraints
-   - ✅ **Memory-based session architecture** - DB stores only completed sessions (end_time required)
+   - ✅ **Memory-based session architecture** - DB stores only completed sessions (end_time NOT NULL)
    - ✅ Soft delete support for tasks
 
 2. **Model Layer:**
