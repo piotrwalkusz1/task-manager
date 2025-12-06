@@ -2,6 +2,7 @@ package com.piotrwalkusz.taskmanager.controller;
 
 import com.piotrwalkusz.taskmanager.config.DatabaseConfig;
 import com.piotrwalkusz.taskmanager.model.Task;
+import com.piotrwalkusz.taskmanager.model.WorkSession;
 import com.piotrwalkusz.taskmanager.service.TaskService;
 import com.piotrwalkusz.taskmanager.service.WorkSessionService;
 import javafx.animation.Animation;
@@ -16,6 +17,8 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+
+import java.time.Instant;
 
 public class MainController {
 
@@ -57,6 +60,9 @@ public class MainController {
     private final WorkSessionService workSessionService = new WorkSessionService(databaseConfig);
 
     private Task currentTask;
+    private WorkSession activeWorkSession;
+    private long completedDailySeconds; // Time from completed sessions today
+    private long completedTotalSeconds; // Time from all completed sessions
     private Timeline timeUpdateTimeline;
 
     @FXML
@@ -175,6 +181,17 @@ public class MainController {
         // Load current task
         currentTask = taskService.getCurrentTask();
 
+        // Load work session state from database
+        if (currentTask != null) {
+            activeWorkSession = workSessionService.getActiveWorkSession(currentTask.getId());
+            completedDailySeconds = workSessionService.getDailyTimeSeconds(currentTask.getId());
+            completedTotalSeconds = workSessionService.getTotalTimeSeconds(currentTask.getId());
+        } else {
+            activeWorkSession = null;
+            completedDailySeconds = 0;
+            completedTotalSeconds = 0;
+        }
+
         // Update task name (only if changed to preserve text selection)
         String newTaskText = (currentTask != null) ? currentTask.getName() : "No tasks in queue";
         if (!currentTaskLabel.getText().equals(newTaskText)) {
@@ -200,7 +217,7 @@ public class MainController {
 
     private void updateButtonsState() {
         boolean hasTask = currentTask != null;
-        boolean isActive = hasTask && workSessionService.hasActiveWorkSession(currentTask.getId());
+        boolean isActive = activeWorkSession != null;
 
         // Start/Pause button (icon changes)
         startPauseButton.setDisable(!hasTask);
@@ -224,8 +241,18 @@ public class MainController {
         if (currentTask == null) {
             newText = "";
         } else {
-            long dailySeconds = workSessionService.getDailyTimeSeconds(currentTask.getId());
-            long totalSeconds = workSessionService.getTotalTimeSeconds(currentTask.getId());
+            // Calculate total time: completed sessions + active session (if any)
+            long dailySeconds = completedDailySeconds;
+            long totalSeconds = completedTotalSeconds;
+
+            if (activeWorkSession != null) {
+                long activeSessionSeconds = java.time.Duration.between(
+                    activeWorkSession.getStartTime(),
+                    Instant.now()
+                ).getSeconds();
+                dailySeconds += activeSessionSeconds;
+                totalSeconds += activeSessionSeconds;
+            }
 
             String dailyTime = workSessionService.formatTimeWithSeconds(dailySeconds);
             String totalTime = workSessionService.formatTime(totalSeconds);

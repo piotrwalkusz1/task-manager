@@ -72,7 +72,8 @@
    - ✅ TaskMapper soft delete methods (hasDeletedTask, softDeleteTask, undoDelete, cleanupDeletedTasks)
    - ✅ TaskMapper updateTaskName method for editing task names
    - ✅ All queries filter out deleted tasks (WHERE is_deleted = 0)
-   - ✅ WorkSessionMapper interface and XML (insertWorkSession, pauseWorkSession, hasActiveWorkSession, time calculations)
+   - ✅ WorkSessionMapper interface and XML (insertWorkSession, pauseWorkSession, hasActiveWorkSession, getActiveWorkSession)
+   - ✅ WorkSessionMapper time calculations (getDailyTimeSeconds, getTotalTimeSeconds) - returns only completed sessions
    - ✅ InstantTypeHandler for UTC timestamp conversion
    - ✅ mybatis-config.xml with SQLite configuration
 
@@ -117,6 +118,8 @@
    - ✅ **Selectable text labels** - all text fields (task name, time, queue size) are selectable and copyable
    - ✅ **Text selection preservation** - equality checks before setText() to prevent selection reset
    - ✅ **Focus management** - focusTraversable="false" on read-only fields prevents unwanted focus/selection
+   - ✅ **Optimized time tracking** - active session cached in memory, time calculated locally without DB queries
+   - ✅ **Smooth timer updates** - no more skipped seconds or 2-second jumps, updates every second precisely
 
 7. **Testing:**
    - ✅ BaseServiceTest with common setup/cleanup
@@ -136,7 +139,8 @@
 - ✅ **Delete current task (soft delete with undo)**
 - ✅ **Undo delete functionality** - restores deleted tasks
 - ✅ **Automatic cleanup** - deleted tasks permanently removed before any operation (Start/Pause, Next Task, Delete Task)
-- ✅ Real-time time tracking display (updates every second)
+- ✅ **Real-time time tracking** - smooth updates every second without database queries
+- ✅ **Efficient time calculation** - active session cached in memory, completed time from DB only on state changes
 - ✅ Queue size counter
 - ✅ **Compact, icon-based UI** - minimal space usage with clear visual feedback
 - ✅ **Selectable and copyable text** - all labels can be selected and copied without entering edit mode

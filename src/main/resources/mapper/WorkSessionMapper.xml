@@ -38,27 +38,21 @@
 
     <select id="getDailyTimeSeconds" resultType="java.lang.Long">
         SELECT COALESCE(SUM(
-            CASE
-                WHEN end_time IS NULL
-                THEN (julianday('now') - julianday(start_time)) * 86400
-                ELSE (julianday(end_time) - julianday(start_time)) * 86400
-            END
+            (julianday(end_time) - julianday(start_time)) * 86400
         ), 0) AS daily_seconds
         FROM work_session
         WHERE task_id = #{taskId}
         AND date(start_time) = date('now')
+        AND end_time IS NOT NULL
     </select>
 
     <select id="getTotalTimeSeconds" resultType="java.lang.Long">
         SELECT COALESCE(SUM(
-            CASE
-                WHEN end_time IS NULL
-                THEN (julianday('now') - julianday(start_time)) * 86400
-                ELSE (julianday(end_time) - julianday(start_time)) * 86400
-            END
+            (julianday(end_time) - julianday(start_time)) * 86400
         ), 0) AS total_seconds
         FROM work_session
         WHERE task_id = #{taskId}
+        AND end_time IS NOT NULL
     </select>
 
 </mapper>
