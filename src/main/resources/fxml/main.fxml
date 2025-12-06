@@ -12,7 +12,7 @@
 <VBox fx:id="rootPane" spacing="12.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.piotrwalkusz.taskmanager.controller.MainController" style="-fx-background-color: #f5f5f5; -fx-padding: 16;" prefWidth="450">
 
     <!-- Current Task Section -->
-    <VBox spacing="8.0" style="-fx-background-color: white; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2); -fx-padding: 16;">
+    <VBox fx:id="currentTaskSection" spacing="8.0" style="-fx-background-color: white; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2); -fx-padding: 16; -fx-border-color: transparent; -fx-border-width: 3; -fx-border-radius: 8;">
         <StackPane alignment="CENTER_LEFT">
             <TextField fx:id="currentTaskLabel" text="No tasks in queue" editable="false" focusTraversable="false" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-background-color: transparent; -fx-border-width: 0; -fx-padding: 0; -fx-cursor: text;"/>
             <TextField fx:id="taskNameEditField" visible="false" managed="false" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-background-color: white; -fx-border-color: #3498db; -fx-border-width: 2; -fx-border-radius: 4; -fx-padding: 4;"/>

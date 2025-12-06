@@ -58,6 +58,9 @@ public class MainController {
     @FXML
     private VBox rootPane;
 
+    @FXML
+    private VBox currentTaskSection;
+
     private final DatabaseConfig databaseConfig = new DatabaseConfig();
     private final TaskService taskService = new TaskService(databaseConfig);
     private final WorkSessionService workSessionService = new WorkSessionService(databaseConfig);
@@ -265,6 +268,10 @@ public class MainController {
 
         // Delete Task button
         deleteTaskButton.setDisable(!hasTask);
+
+        // Update current task section border (green when active, transparent when inactive)
+        String borderColor = isActive ? "#27ae60" : "transparent";
+        currentTaskSection.setStyle("-fx-background-color: white; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2); -fx-padding: 16; -fx-border-color: " + borderColor + "; -fx-border-width: 3; -fx-border-radius: 8;");
     }
 
     private void updateUndoButton() {
