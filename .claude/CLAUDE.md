@@ -123,9 +123,11 @@
    - ✅ **Session tracking fields**: activeWorkSession (current), currentTaskSessions (List), lastCurrentTaskId
    - ✅ **Session lifecycle**: created in memory → saved to DB only when paused/task switched/app closed
    - ✅ **Optimized time tracking** - local calculation using Duration.between(), no DB queries per second
+   - ✅ **Completed time caching** - completedDailySeconds/completedTotalSeconds loaded once when task changes, prevents double counting
    - ✅ **Smooth timer updates** - no more skipped seconds or 2-second jumps, updates every second precisely
    - ✅ **Time display format**: "Time: Xh Ym Zs (Today: Xh Ym, Total: Xh Ym)"
    - ✅ **Current session time** - resets when switching tasks, persists through pause/resume
+   - ✅ **Accurate time calculation** - no double counting of sessions in Today/Total time
 
 7. **Testing:**
    - ✅ BaseServiceTest with common setup/cleanup
@@ -148,9 +150,11 @@
 - ✅ **Automatic cleanup** - deleted tasks permanently removed before any operation (Start/Pause, Next Task, Delete Task)
 - ✅ **Real-time time tracking** - smooth updates every second without database queries
 - ✅ **Memory-based session architecture** - active sessions in memory, DB stores only completed sessions
-- ✅ **Efficient time calculation** - local Duration.between() for active session, DB query only on state changes
+- ✅ **Efficient time calculation** - local Duration.between() for active session, DB query only when task changes
+- ✅ **Completed time caching** - daily/total time from DB loaded once per task, prevents double counting
 - ✅ **Current session tracking** - "Time" field shows time since task was displayed, resets on task switch
 - ✅ **Session persistence** - sessions survive pause/resume, reset only on task switch
+- ✅ **Accurate aggregation** - Today/Total time correctly sums completed sessions from DB + current task sessions
 - ✅ Queue size counter
 - ✅ **Compact, icon-based UI** - minimal space usage with clear visual feedback
 - ✅ **Selectable and copyable text** - all labels can be selected and copied without entering edit mode

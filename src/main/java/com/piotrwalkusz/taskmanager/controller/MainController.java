@@ -213,20 +213,20 @@ public class MainController {
         // Load current task
         currentTask = taskService.getCurrentTask();
 
-        // Detect task change - reset session list
+        // Detect task change - reset session list and load completed time from DB
         Long currentTaskId = currentTask != null ? currentTask.getId() : null;
         if (!Objects.equals(lastCurrentTaskId, currentTaskId)) {
             currentTaskSessions.clear();
             lastCurrentTaskId = currentTaskId;
-        }
 
-        // Load work session state from database (completed sessions only)
-        if (currentTask != null) {
-            completedDailySeconds = workSessionService.getDailyTimeSeconds(currentTask.getId());
-            completedTotalSeconds = workSessionService.getTotalTimeSeconds(currentTask.getId());
-        } else {
-            completedDailySeconds = 0;
-            completedTotalSeconds = 0;
+            // Load work session state from database (completed sessions only) - ONLY when task changes
+            if (currentTask != null) {
+                completedDailySeconds = workSessionService.getDailyTimeSeconds(currentTask.getId());
+                completedTotalSeconds = workSessionService.getTotalTimeSeconds(currentTask.getId());
+            } else {
+                completedDailySeconds = 0;
+                completedTotalSeconds = 0;
+            }
         }
 
         // Update task name (only if changed to preserve text selection)
