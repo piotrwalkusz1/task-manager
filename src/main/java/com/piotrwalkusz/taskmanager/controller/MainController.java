@@ -13,6 +13,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.IndexRange;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.VBox;
@@ -337,8 +338,13 @@ public class MainController {
             newText = String.format("Time: %s (Today: %s, Total: %s)", currentTime, todayTime, totalTime);
         }
 
-        // Only update if text actually changed to preserve text selection
-        if (!timeLabel.getText().equals(newText)) {
+        // Preserve selection/caret only if the field has focus, preserving direction
+        if (timeLabel.isFocused()) {
+            int anchor = timeLabel.getAnchor();
+            int caret = timeLabel.getCaretPosition();
+            timeLabel.setText(newText);
+            timeLabel.selectRange(anchor, caret);
+        } else {
             timeLabel.setText(newText);
         }
     }
