@@ -269,9 +269,31 @@ public class MainController {
         // Delete Task button
         deleteTaskButton.setDisable(!hasTask);
 
-        // Update current task section border (green when active, transparent when inactive)
-        String borderColor = isActive ? "#27ae60" : "transparent";
-        currentTaskSection.setStyle("-fx-background-color: white; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2); -fx-padding: 16; -fx-border-color: " + borderColor + "; -fx-border-width: 3; -fx-border-radius: 8;");
+        // Update current task section border with glow effect when active
+        if (isActive) {
+            // Bright green border with glow effect
+            currentTaskSection.setStyle(
+                "-fx-background-color: white; " +
+                "-fx-background-radius: 8; " +
+                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2), " +
+                "           dropshadow(gaussian, #2ecc71, 12, 0.6, 0, 0); " +
+                "-fx-padding: 16; " +
+                "-fx-border-color: #2ecc71; " +
+                "-fx-border-width: 3; " +
+                "-fx-border-radius: 8;"
+            );
+        } else {
+            // Transparent border, no glow
+            currentTaskSection.setStyle(
+                "-fx-background-color: white; " +
+                "-fx-background-radius: 8; " +
+                "-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2); " +
+                "-fx-padding: 16; " +
+                "-fx-border-color: transparent; " +
+                "-fx-border-width: 3; " +
+                "-fx-border-radius: 8;"
+            );
+        }
     }
 
     private void updateUndoButton() {

@@ -117,7 +117,7 @@
    - ✅ Timeline for real-time time updates (every second)
    - ✅ Event handlers for Add Task, Start/Pause, Next Task, Delete Task, Undo, Edit Task Name
    - ✅ **Application close handler** - saves active session when app closes
-   - ✅ **Visual active state indicator** - green border around task section when session is active
+   - ✅ **Visual active state indicator** - bright green border with glow effect when session is active
    - ✅ **Selectable text labels** - all text fields (task name, time, queue size) are selectable and copyable
    - ✅ **Text selection preservation** - equality checks before setText() to prevent selection reset
    - ✅ **Focus management** - focusTraversable="false" on read-only fields prevents unwanted focus/selection
