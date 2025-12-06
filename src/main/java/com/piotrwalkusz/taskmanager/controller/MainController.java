@@ -95,6 +95,10 @@ public class MainController {
                 saveTaskName();
                 event.consume();
             }
+            // Remove focus from new task text field when clicking elsewhere
+            if (newTaskTextField.isFocused() && !isDescendant(newTaskTextField, (Node) event.getTarget())) {
+                rootPane.requestFocus();
+            }
         });
 
         // Load initial state
@@ -110,6 +114,7 @@ public class MainController {
 
         taskService.addTask(taskName);
         newTaskTextField.clear();
+        rootPane.requestFocus(); // Remove focus from text field
         refreshUI();
     }
 
