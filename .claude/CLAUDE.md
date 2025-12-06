@@ -70,6 +70,7 @@
 3. **Persistence Layer (MyBatis):**
    - ✅ TaskMapper interface and XML (getCurrentTask, insertTask, rotateTask, getQueueSize)
    - ✅ TaskMapper soft delete methods (hasDeletedTask, softDeleteTask, undoDelete, cleanupDeletedTasks)
+   - ✅ TaskMapper updateTaskName method for editing task names
    - ✅ All queries filter out deleted tasks (WHERE is_deleted = 0)
    - ✅ WorkSessionMapper interface and XML (insertWorkSession, pauseWorkSession, hasActiveWorkSession, time calculations)
    - ✅ InstantTypeHandler for UTC timestamp conversion
@@ -78,6 +79,7 @@
 4. **Service Layer:**
    - ✅ TaskService with transactional rotateTaskWithPause() method
    - ✅ TaskService soft delete methods (softDeleteTask, undoDelete, hasDeletedTask, cleanupDeletedTasks)
+   - ✅ TaskService updateTaskName method for editing task names
    - ✅ WorkSessionService with transactional toggleWorkSession() method
    - ✅ All business operations are atomic and transactional
    - ✅ Proper transaction boundaries using SqlSession
@@ -92,24 +94,30 @@
 6. **UI Layer:**
    - ✅ main.fxml with all required UI components (task display, time labels, buttons, input field)
    - ✅ Delete Task button and Undo button in main.fxml
+   - ✅ Task name editing UI with StackPane containing Label and TextField
    - ✅ Compact UI layout optimized for minimal space usage
    - ✅ Icon-only buttons with Unicode symbols (▶/⏸ for Start/Pause, ⤵ for Next Task, ✓ for Done, ↩ for Undo)
    - ✅ Optimized font sizes (18px for task name, 13px for time/queue info, 14px for input)
    - ✅ Compact spacing (10px main, 8px between buttons) and padding (15px main, 12px task section)
    - ✅ MainController with complete business logic
    - ✅ MainController handlers for delete/undo operations
+   - ✅ MainController task name editing with double-click handler
+   - ✅ Hand cursor on task name hover for better UX
+   - ✅ Left-aligned task name (StackPane alignment="CENTER_LEFT")
+   - ✅ Event filter to save edits when clicking outside TextField
+   - ✅ isDescendant() helper to allow text selection within TextField
    - ✅ Undo button visibility managed dynamically (visible only when there are deleted tasks)
    - ✅ Automatic cleanup of deleted tasks before Start/Pause, Next Task, AND Delete Task
    - ✅ Bug fixed: cleanup now prevents accumulation of multiple soft-deleted tasks
    - ✅ Timeline for real-time time updates (every second)
-   - ✅ Event handlers for Add Task, Start/Pause, Next Task, Delete Task, Undo
+   - ✅ Event handlers for Add Task, Start/Pause, Next Task, Delete Task, Undo, Edit Task Name
 
 7. **Testing:**
    - ✅ BaseServiceTest with common setup/cleanup
    - ✅ Each test gets isolated database in temp directory (JUnit @TempDir)
-   - ✅ TaskServiceTest - 6 tests covering queue operations and rotation
+   - ✅ TaskServiceTest - 8 tests covering queue operations, rotation, and task name editing
    - ✅ WorkSessionServiceTest - 6 tests covering session management
-   - ✅ All tests passing (13 tests, 0 failures, ~3.2s execution time)
+   - ✅ All tests passing (15 tests, 0 failures, ~2.7s execution time)
    - ✅ No Thread.sleep() - tests are fast and stable
 
 **Application Features Working:**
@@ -118,6 +126,7 @@
 - ✅ Display current task (head of queue)
 - ✅ Start/Pause work sessions (transactional toggle)
 - ✅ Rotate tasks to end of queue (transactional with auto-pause)
+- ✅ **Edit task name** - double-click to edit, Enter to save, Escape to cancel, click outside to save
 - ✅ **Delete current task (soft delete with undo)**
 - ✅ **Undo delete functionality** - restores deleted tasks
 - ✅ **Automatic cleanup** - deleted tasks permanently removed before any operation (Start/Pause, Next Task, Delete Task)
@@ -167,8 +176,6 @@
    - ✅ Automatic GitHub Release creation
 
 **Next Steps:**
-- Test release workflow by pushing a tag
 - Implement DIY auto-updater
-- Implement task name editing
 - Implement priority flag for tasks
 - Further UI/UX refinements based on user feedback

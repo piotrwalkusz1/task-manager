@@ -8,9 +8,13 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
+import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 
 public class MainController {
@@ -42,6 +46,12 @@ public class MainController {
     @FXML
     private Button undoButton;
 
+    @FXML
+    private TextField taskNameEditField;
+
+    @FXML
+    private VBox rootPane;
+
     private final DatabaseConfig databaseConfig = new DatabaseConfig();
     private final TaskService taskService = new TaskService(databaseConfig);
     private final WorkSessionService workSessionService = new WorkSessionService(databaseConfig);
@@ -56,6 +66,36 @@ public class MainController {
         timeUpdateTimeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> updateTimeDisplay()));
         timeUpdateTimeline.setCycleCount(Animation.INDEFINITE);
         timeUpdateTimeline.play();
+
+        // Setup double-click handler for task name editing
+        currentTaskLabel.setOnMouseClicked(event -> {
+            if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2 && currentTask != null) {
+                startEditingTaskName();
+            }
+        });
+
+        // Setup TextField handlers
+        taskNameEditField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                saveTaskName();
+            } else if (event.getCode() == KeyCode.ESCAPE) {
+                cancelEditingTaskName();
+            }
+        });
+
+        taskNameEditField.focusedProperty().addListener((obs, wasFocused, isNowFocused) -> {
+            if (wasFocused && !isNowFocused) {
+                saveTaskName();
+            }
+        });
+
+        // Handle clicks anywhere to close edit mode (except on the TextField itself)
+        rootPane.addEventFilter(javafx.scene.input.MouseEvent.MOUSE_PRESSED, event -> {
+            if (taskNameEditField.isVisible() && !isDescendant(taskNameEditField, (Node) event.getTarget())) {
+                saveTaskName();
+                event.consume();
+            }
+        });
 
         // Load initial state
         refreshUI();
@@ -185,5 +225,60 @@ public class MainController {
         String totalTime = workSessionService.formatTime(totalSeconds);
 
         timeLabel.setText(String.format("Time today: %s (Total: %s)", dailyTime, totalTime));
+    }
+
+    private void startEditingTaskName() {
+        // Switch to edit mode
+        currentTaskLabel.setVisible(false);
+        currentTaskLabel.setManaged(false);
+        taskNameEditField.setVisible(true);
+        taskNameEditField.setManaged(true);
+
+        // Set current task name in edit field
+        taskNameEditField.setText(currentTask.getName());
+
+        // Select all text and focus
+        taskNameEditField.selectAll();
+        taskNameEditField.requestFocus();
+    }
+
+    private void saveTaskName() {
+        if (!taskNameEditField.isVisible() || currentTask == null) {
+            return;
+        }
+
+        String newName = taskNameEditField.getText().trim();
+        if (!newName.isEmpty() && !newName.equals(currentTask.getName())) {
+            // Update task name in database
+            taskService.updateTaskName(currentTask.getId(), newName);
+        }
+
+        // Switch back to display mode
+        cancelEditingTaskName();
+
+        // Refresh UI to show updated name
+        refreshUI();
+    }
+
+    private void cancelEditingTaskName() {
+        // Switch back to display mode
+        taskNameEditField.setVisible(false);
+        taskNameEditField.setManaged(false);
+        currentTaskLabel.setVisible(true);
+        currentTaskLabel.setManaged(true);
+    }
+
+    private boolean isDescendant(Node parent, Node node) {
+        if (parent == node) {
+            return true;
+        }
+        Node current = node;
+        while (current != null) {
+            if (current == parent) {
+                return true;
+            }
+            current = current.getParent();
+        }
+        return false;
     }
 }

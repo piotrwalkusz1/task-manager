@@ -58,4 +58,9 @@ public interface TaskMapper {
      * Permanently delete all soft-deleted tasks
      */
     void cleanupDeletedTasks();
+
+    /**
+     * Update task name
+     */
+    void updateTaskName(@Param("taskId") Long taskId, @Param("name") String name);
 }

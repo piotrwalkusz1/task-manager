@@ -101,4 +101,39 @@ class TaskServiceTest extends BaseServiceTest {
         // Then
         assertFalse(workSessionService.hasActiveWorkSession(task1.getId()));
     }
+
+    @Test
+    @DisplayName("Should update task name")
+    void testUpdateTaskName() {
+        // Given
+        taskService.addTask("Original name");
+        Task task = taskService.getCurrentTask();
+        Long taskId = task.getId();
+
+        // When
+        taskService.updateTaskName(taskId, "Updated name");
+
+        // Then
+        Task updatedTask = taskService.getCurrentTask();
+        assertEquals("Updated name", updatedTask.getName());
+        assertEquals(taskId, updatedTask.getId());
+    }
+
+    @Test
+    @DisplayName("Should update task name and persist changes")
+    void testUpdateTaskNamePersistence() {
+        // Given
+        taskService.addTask("Task 1");
+        taskService.addTask("Task 2");
+        Task task1 = taskService.getCurrentTask();
+
+        // When
+        taskService.updateTaskName(task1.getId(), "Modified Task 1");
+
+        // Then
+        var allTasks = taskService.getAllTasks();
+        assertEquals(2, allTasks.size());
+        assertEquals("Modified Task 1", allTasks.get(0).getName());
+        assertEquals("Task 2", allTasks.get(1).getName());
+    }
 }

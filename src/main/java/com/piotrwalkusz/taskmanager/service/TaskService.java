@@ -129,4 +129,15 @@ public class TaskService {
             session.commit();
         }
     }
+
+    /**
+     * Update task name
+     */
+    public void updateTaskName(Long taskId, String name) {
+        try (SqlSession session = databaseConfig.getSqlSessionFactory().openSession()) {
+            TaskMapper mapper = session.getMapper(TaskMapper.class);
+            mapper.updateTaskName(taskId, name);
+            session.commit();
+        }
+    }
 }

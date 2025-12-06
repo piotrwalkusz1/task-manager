@@ -64,4 +64,8 @@
         DELETE FROM task WHERE is_deleted = 1
     </delete>
 
+    <update id="updateTaskName">
+        UPDATE task SET name = #{name} WHERE id = #{taskId}
+    </update>
+
 </mapper>
