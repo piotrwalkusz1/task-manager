@@ -94,6 +94,7 @@
    - ✅ DatabaseConfig enables SQLite foreign keys via URL parameter (?foreign_keys=on)
    - ✅ MyBatis config uses Properties to override database URL (simple solution)
    - ✅ Maven compiler plugin configured with Lombok annotation processor
+   - ✅ **System-specific data locations**: Windows (%LOCALAPPDATA%\TaskManager), Linux (~/.local/share/TaskManager)
 
 6. **UI Layer:**
    - ✅ main.fxml with all required UI components (task display, time labels, buttons, input field)

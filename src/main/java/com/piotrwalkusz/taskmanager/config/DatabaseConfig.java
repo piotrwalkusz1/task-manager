@@ -7,6 +7,9 @@ import org.flywaydb.core.Flyway;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 /**
@@ -14,14 +17,46 @@ import java.util.Properties;
  */
 public class DatabaseConfig {
 
-    private static final String DEFAULT_DB_URL = "jdbc:sqlite:taskmanager.db";
     private final SqlSessionFactory sqlSessionFactory;
 
     /**
-     * Create DatabaseConfig with default database URL
+     * Create DatabaseConfig with default database URL (system-specific location)
      */
     public DatabaseConfig() {
-        this(DEFAULT_DB_URL);
+        this(getDefaultDatabasePath());
+    }
+
+    /**
+     * Get default database path based on operating system
+     * Windows: %LOCALAPPDATA%\TaskManager\taskmanager.db
+     * Linux: ~/.local/share/TaskManager/taskmanager.db
+     */
+    private static String getDefaultDatabasePath() {
+        String os = System.getProperty("os.name").toLowerCase();
+        Path dataDir;
+
+        if (os.contains("win")) {
+            // Windows: use LOCALAPPDATA
+            String localAppData = System.getenv("LOCALAPPDATA");
+            if (localAppData == null) {
+                localAppData = System.getProperty("user.home") + "\\AppData\\Local";
+            }
+            dataDir = Paths.get(localAppData, "TaskManager");
+        } else {
+            // Linux/Unix: use XDG Base Directory
+            String home = System.getProperty("user.home");
+            dataDir = Paths.get(home, ".local", "share", "TaskManager");
+        }
+
+        // Create directory if it doesn't exist
+        try {
+            Files.createDirectories(dataDir);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to create data directory: " + dataDir, e);
+        }
+
+        Path dbPath = dataDir.resolve("taskmanager.db");
+        return "jdbc:sqlite:" + dbPath.toString();
     }
 
     /**
