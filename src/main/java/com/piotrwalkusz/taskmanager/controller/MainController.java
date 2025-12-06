@@ -170,11 +170,13 @@ public class MainController {
         // Load current task
         currentTask = taskService.getCurrentTask();
 
-        // Update task name
+        // Update task name and cursor
         if (currentTask != null) {
             currentTaskLabel.setText(currentTask.getName());
+            currentTaskLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-cursor: hand;");
         } else {
             currentTaskLabel.setText("No tasks in queue");
+            currentTaskLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2c3e50; -fx-cursor: default;");
         }
 
         // Update buttons state
